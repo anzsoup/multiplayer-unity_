@@ -88,6 +88,8 @@ namespace ChickenIngot.Steam
 			Initialized = false;
 			Me = null;
 			SteamUserDict = new Dictionary<ulong, SteamUser>();
+
+			RMPNetworkService.OnServerOpen.AddListener(_OnServerOpen);
 		}
 
 		void Update()
@@ -355,21 +357,24 @@ namespace ChickenIngot.Steam
 			}
 		}
 
-		[ClientRPC]
+		[RMP]
+		[ClientOnly]
 		private void clRPC_ConnectionAccepted()
 		{
 			Debug.Log("Steam server accepts connection.");
 			OnJoinSteamServer.Invoke();
 		}
 
-		[ClientRPC]
+		[RMP]
+		[ClientOnly]
 		private void clRPC_ConnectionRejected(string message)
 		{
 			Debug.LogWarning("Steam server rejects connection. : " + message);
 			RMPNetworkService.StopClient();
 		}
 
-		[ClientRPC]
+		[RMP]
+		[ClientOnly]
 		private void clRPC_HandShake()
 		{
 			Debug.Log("Getting steam auth ticket.");
@@ -382,7 +387,8 @@ namespace ChickenIngot.Steam
 			_view.RPC(RPCOption.ToServer, "svRPC_HandShake", Build.VERSION, ticketData, steamIDData, username);
 		}
 
-		[ServerRPC]
+		[RMP]
+		[ServerOnly]
 		private void svRPC_HandShake(string version, byte[] steamTicketData, byte[] steamIDData, string username)
 		{
 			Debug.Log("Steam auth ticket received (" + username + ")");
@@ -397,7 +403,7 @@ namespace ChickenIngot.Steam
 		}
 
 		[ServerOnly]
-		public void _OnServerOpen()
+		private void _OnServerOpen()
 		{
 			// 서버를 먼저 만든 다음 스팀에 올림
 			if (!StartSteamServer(OnAuthChange))
@@ -410,20 +416,20 @@ namespace ChickenIngot.Steam
 		}
 
 		[ServerOnly]
-		public void _OnServerClose()
+		private void _OnServerClose()
 		{
 			_onSteamServerClose.Invoke();
 		}
 
 		[ServerOnly]
-		public void _OnClientConnect(RMPPeer client)
+		private void _OnClientConnect(RMPPeer client)
 		{
 			Debug.Log("Client connected. Waiting for steam auth ticket.");
 			_view.RPC(client, "clRPC_HandShake");
 		}
 
 		[ServerOnly]
-		public void _OnClientDisconnect(RMPPeer client)
+		private void _OnClientDisconnect(RMPPeer client)
 		{
 			// 다른 유저의 접속 처리 도중에 사라지면 안되기 때문에 atomic한 연산이 보장되어야 한다.
 			ConnectionOperation disconnect = new ConnectionOperation();
@@ -433,15 +439,13 @@ namespace ChickenIngot.Steam
 		}
 
 		[ClientOnly]
-		public void _OnDisconnectFromServer()
+		private void _OnDisconnectFromServer()
 		{
-			Console.Terminal.Log("Disconnected from server.");
 			Me.Steam.CancelAuthSessionTicket();
-
 			_onExitSteamServer.Invoke();
 		}
 
-		public static bool StartClient()
+		public static bool StartSteamClient()
 		{
 			_instance._client = new Client(_instance._appId);
 
@@ -458,20 +462,18 @@ namespace ChickenIngot.Steam
 			return true;
 		}
 
-		public static bool StartSteamServer(Action<ulong, ulong, ServerAuth.Status> OnAuthChange)
+		public static bool StartSteamServer(SteamServerConfig config, Action<ulong, ulong, ServerAuth.Status> OnAuthChange)
 		{
 			if (_instance._server != null)
 				return false;
-
-			string modDir = Build.PRODUCT_NAME_CLIENT;
-			string gameDesc = Build.PRODUCT_NAME_CLIENT;
-			var serverInit = new ServerInit(modDir, gameDesc);
-			serverInit.Secure = true;
-			serverInit.VersionString = Build.VERSION;
+			
+			var serverInit = new ServerInit(config.modDir, config.gameDesc);
+			serverInit.Secure = config.secure;
+			serverInit.VersionString = config.version;
 
 			_instance._server = new Server(_instance._appId, serverInit);
-			_instance._server.ServerName = Multiplayer.Instance.ServerConfig.serverName;
-			_instance._server.MaxPlayers = Multiplayer.Instance.ServerConfig.maxPlayers;
+			_instance._server.ServerName = config.name;
+			_instance._server.MaxPlayers = config.maxPlayers;
 			_instance._server.LogOnAnonymous();
 
 			if (!_instance._server.IsValid)
