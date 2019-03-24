@@ -46,7 +46,7 @@ namespace ChickenIngot.Networking.Demo
 			Debug.LogWarning("\t** Connected **");
 		}
 
-		public void _OnDisconnectFromServer()
+		public void _OnDisconnectFromServer(RMPPeer server)
 		{
 			_demoSpawning.enabled = false;
 			Debug.LogWarning("\t** Disconnected **");
