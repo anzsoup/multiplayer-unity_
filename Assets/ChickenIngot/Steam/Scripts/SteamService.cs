@@ -4,6 +4,7 @@ using Facepunch.Steamworks;
 using ChickenIngot.Networking;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
 namespace ChickenIngot.Steam
 {
@@ -37,7 +38,8 @@ namespace ChickenIngot.Steam
 
 		public static bool Initialized { get; private set; }
 		public static SteamUser Me { get; private set; }
-		public static Dictionary<ulong, SteamUser> SteamUserDict { get; private set; }
+		public static List<SteamUser> Users { get; private set; }
+		public static SteamConfig Config { get; set; }
 
 		#region Events
 
@@ -83,13 +85,22 @@ namespace ChickenIngot.Steam
 		void Start()
 		{
 			// Configure us for this unity platform
-			Config.ForUnity(Application.platform.ToString());
+			Facepunch.Steamworks.Config.ForUnity(Application.platform.ToString());
 
 			Initialized = false;
 			Me = null;
-			SteamUserDict = new Dictionary<ulong, SteamUser>();
+			Users = new List<SteamUser>();
+			Config = new SteamConfig();
 
-			RMPNetworkService.OnServerOpen.AddListener(_OnServerOpen);
+			// RMP 네트워킹을 사용중일 경우 자동으로 스팀서버가 연동된다.
+			if (RMPNetworkService.Exists)
+			{
+				RMPNetworkService.OnServerOpen.AddListener(_OnServerOpen);
+				RMPNetworkService.OnServerClose.AddListener(_OnServerClose);
+				RMPNetworkService.OnClientConnect.AddListener(_OnClientConnect);
+				RMPNetworkService.OnClientDisconnect.AddListener(_OnClientDisconnect);
+				RMPNetworkService.OnDisconnectFromServer.AddListener(_OnDisconnectFromServer);
+			}
 		}
 
 		void Update()
@@ -101,14 +112,10 @@ namespace ChickenIngot.Steam
 
 		void OnDestroy()
 		{
-			if (Multiplayer.Instance.Me != null)
+			if (Me != null)
 			{
-				var myAccount = Multiplayer.Instance.Me.Steam;
-				if (myAccount != null)
-				{
-					myAccount.CancelAuthSessionTicket();
-					myAccount = null;
-				}
+				Me.CancelAuthSessionTicket();
+				Me = null;
 			}
 
 			if (_client != null)
@@ -195,24 +202,25 @@ namespace ChickenIngot.Steam
 			}
 
 			// 인원수
-			if (UserList.Count >= ServerConfig.maxPlayers)
+			if (Users.Count >= Config.MaxPlayers)
 			{
-				string msg = "Server is full. (" + UserList.Count + "/" + ServerConfig.maxPlayers + ")";
+				string msg = "Server is full. (" + Users.Count + "/" + Config.MaxPlayers + ")";
 				RejectUser(client, msg);
 				return;
 			}
 			// 버전
-			if (!version.Equals(Build.VERSION))
+			if (!version.Equals(Config.Version))
 			{
-				string msg = "Version mismatch. Client: " + version + ", Server: " + Build.VERSION;
+				string msg = "Version mismatch. Client: " + version + ", Server: " + Config.Version;
 				RejectUser(client, msg);
 				return;
 			}
 
 			// 스팀인증
-			byte[] ticketData = user.steamTicketData;
-			ulong steamID = BitConverter.ToUInt64(user.steamIdData, 0);
-			Debug.Log("Authorizing steam user. (" + steamID + ")");
+			var ticketData = user.steamTicketData;
+			var steamID = BitConverter.ToUInt64(user.steamIdData, 0);
+			var username = user.username;
+			Debug.Log(string.Format("Authorizing steam user. ({0})", username));
 
 			if (Server.Instance.Auth.StartSession(ticketData, steamID))
 			{
@@ -250,7 +258,7 @@ namespace ChickenIngot.Steam
 						break;
 
 					default:
-						string message = "Steam auth failed. (" + steamId + "): " + status.ToString();
+						var message = string.Format("Steam auth failed. ({0}): {1}", waitingUser.username, status.ToString());
 						RejectUser(waitingUser.peer, message);
 						break;
 				}
@@ -287,10 +295,10 @@ namespace ChickenIngot.Steam
 			var steamId = user.steamId;
 			// 서버 프로그램은 직접 전달받는 것 외에는 유저의 정보를 알 방법이 없다.
 			var username = user.username;
-			var steamuser = new SteamUser(client, user.steamId, username);
-			SteamUserDict.Add(steamId, steamuser);
+			var steamuser = new SteamUser(client, steamId, username);
+			Users.Add(steamuser);
 
-			Debug.Log("Accept steam user. (" + steamId + ")");
+			Debug.Log(string.Format("Steam user connected. : {0}", username));
 
 			// accept 알림
 			_view.RPC(client, "clRPC_ConnectionAccepted");
@@ -299,16 +307,18 @@ namespace ChickenIngot.Steam
 		[ServerOnly]
 		private void DisposeUser(ConnectionOperation user)
 		{
-			User target;
-			if (_userManager.TryGetUser(user.peer, out target))
+			var steamuser = Users.Find(u => u.Peer == user.peer);
+			if (steamuser == null)
 			{
-				Debug.Log("Finishing steam session. (" + target.Steam.SteamID + ")");
-				Server.Instance.Auth.EndSession(target.Steam.SteamID);
-				target.OnExit();
-				_userManager.RemoveUserInstance(target);
+				Debug.LogError("Disconnection event invoked, but steam user not found.");
+				return;
 			}
 
-			Debug.Log("User disconnection completed.");
+			Debug.Log("Closing steam session. (" + steamuser.SteamId + ")");
+			Server.Instance.Auth.EndSession(steamuser.SteamId);
+			Users.Remove(steamuser);
+
+			Debug.Log(string.Format("Steam user disconnected. : {0}", steamuser.Username));
 		}
 
 		[ServerOnly]
@@ -357,6 +367,59 @@ namespace ChickenIngot.Steam
 			}
 		}
 
+		private static bool StartSteamClient()
+		{
+			_instance._client = new Client(_instance._appId);
+
+			if (!_instance._client.IsValid)
+			{
+				_instance._client = null;
+				Debug.LogError("Failed to initialize steam client.");
+				return false;
+			}
+
+			Me = new SteamUser(null, _instance._client.SteamId, _instance._client.Username);
+			Debug.Log(string.Format("Steam client initialized : {0} / {1}", Me.Username, Me.SteamId));
+			Initialized = true;
+			return true;
+		}
+
+		private static bool StartSteamServer(Action<ulong, ulong, ServerAuth.Status> OnAuthChange)
+		{
+			if (_instance._server != null)
+				return false;
+
+			var serverInit = new ServerInit(Config.ModDir, Config.GameDescription);
+			serverInit.Secure = Config.Secure;
+			serverInit.VersionString = Config.Version;
+
+			_instance._server = new Server(_instance._appId, serverInit);
+			_instance._server.ServerName = Config.Name;
+			_instance._server.MaxPlayers = Config.MaxPlayers;
+			_instance._server.LogOnAnonymous();
+
+			if (!_instance._server.IsValid)
+			{
+				_instance._server = null;
+				Debug.LogError("Failed to initialize steam server.");
+				return false;
+			}
+
+			Server.Instance.Auth.OnAuthChange = OnAuthChange;
+			Debug.Log("Steam server initialized.");
+			Initialized = true;
+			return true;
+		}
+
+		private void EndSteamClient()
+		{
+
+		}
+		private void EndSteamServer()
+		{
+
+		}
+
 		[RMP]
 		[ClientOnly]
 		private void clRPC_ConnectionAccepted()
@@ -382,16 +445,16 @@ namespace ChickenIngot.Steam
 			ulong steamId = Client.Instance.SteamId;
 			byte[] ticketData = ticket.Data;
 			byte[] steamIDData = BitConverter.GetBytes(steamId);
-			string username = Me.Steam.Username;
+			string username = Me.Username;
 			// 버전, 스팀티켓, 스팀id 전송
-			_view.RPC(RPCOption.ToServer, "svRPC_HandShake", Build.VERSION, ticketData, steamIDData, username);
+			_view.RPC(RPCOption.ToServer, "svRPC_HandShake", Config.Version, ticketData, steamIDData, username);
 		}
 
 		[RMP]
 		[ServerOnly]
 		private void svRPC_HandShake(string version, byte[] steamTicketData, byte[] steamIDData, string username)
 		{
-			Debug.Log("Steam auth ticket received (" + username + ")");
+			Debug.Log(string.Format("Steam auth ticket received. : {0}", username));
 			ConnectionOperation req = new ConnectionOperation();
 			req.type = ConnectionOperationType.Connecting;
 			req.peer = _view.MessageSender;
@@ -439,64 +502,10 @@ namespace ChickenIngot.Steam
 		}
 
 		[ClientOnly]
-		private void _OnDisconnectFromServer()
+		private void _OnDisconnectFromServer(RMPPeer server)
 		{
-			Me.Steam.CancelAuthSessionTicket();
+			Me.CancelAuthSessionTicket();
 			_onExitSteamServer.Invoke();
-		}
-
-		public static bool StartSteamClient()
-		{
-			_instance._client = new Client(_instance._appId);
-
-			if (!_instance._client.IsValid)
-			{
-				_instance._client = null;
-				Debug.LogError("Failed to initialize steam client.");
-				return false;
-			}
-
-			Me = new SteamUser(null, _instance._client.SteamId, _instance._client.Username);
-			Debug.Log("Steam client initialized: " + Me.Username + " / " + Me.SteamId);
-			Initialized = true;
-			return true;
-		}
-
-		public static bool StartSteamServer(SteamServerConfig config, Action<ulong, ulong, ServerAuth.Status> OnAuthChange)
-		{
-			if (_instance._server != null)
-				return false;
-			
-			var serverInit = new ServerInit(config.modDir, config.gameDesc);
-			serverInit.Secure = config.secure;
-			serverInit.VersionString = config.version;
-
-			_instance._server = new Server(_instance._appId, serverInit);
-			_instance._server.ServerName = config.name;
-			_instance._server.MaxPlayers = config.maxPlayers;
-			_instance._server.LogOnAnonymous();
-
-			if (!_instance._server.IsValid)
-			{
-				_instance._server = null;
-				Debug.LogError("Failed to initialize steam server.");
-				return false;
-			}
-
-			Server.Instance.Auth.OnAuthChange = OnAuthChange;
-			Debug.Log("Steam server initialized.");
-			Initialized = true;
-			return true;
-		}
-
-		private void EndSteamServer()
-		{
-
-		}
-
-		private void EndSteamClient()
-		{
-
 		}
 
 		public static void DisposeServer()

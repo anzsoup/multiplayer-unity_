@@ -7,15 +7,15 @@ namespace ChickenIngot.Steam
 {
 	public class SteamUser
 	{
-		public RMPSession Session { get; private set; }
+		public RMPPeer Peer { get; private set; }
 		public ulong SteamId { get; private set; }
 		public string Username { get; private set; }
 		public Auth.Ticket SteamTicket { get; private set; }
 
-		public SteamUser(RMPSession session, ulong steamId, string username)
+		public SteamUser(RMPPeer peer, ulong steamId, string username)
 		{
 			// 본인의 유저객체일 경우 Session == null
-			Session = session;
+			Peer = peer;
 			SteamId = steamId;
 			Username = username;
 		}
