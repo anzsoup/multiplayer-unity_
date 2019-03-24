@@ -13,6 +13,7 @@ namespace ChickenIngot.Networking
 		[SerializeField]
 		private RMPNetworkView[] _replicateTable;
 
+		public static bool Exists { get { return _instance != null; } }
 		public static RMPNetworkView[] ReplicateTable { get { return _instance._replicateTable; } }
 
 		#region Events
@@ -67,6 +68,14 @@ namespace ChickenIngot.Networking
 			}
 
 			NetworkService.Init(gameObject);
+		}
+
+		void OnDestroy()
+		{
+			if (_instance == this)
+			{
+				_instance = null;
+			}
 		}
 
 		public static void StartServer(int localPort = 0, int maxConnection = 1)

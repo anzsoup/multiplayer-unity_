@@ -39,7 +39,7 @@ namespace ChickenIngot.Networking
 			var parameters = new object[numOfParams];
 
 			for (int i = 0; i < numOfParams; ++i)
-				parameters[i] = Encoding.PopParameter(msg);
+				parameters[i] = RMPEncoding.PopParameter(msg);
 
 			try
 			{
@@ -95,18 +95,18 @@ namespace ChickenIngot.Networking
 
 		public void OnMessage(Packet msg)
 		{
-			var pt = (Encoding.ProtocolId)msg.PopByte();
+			var pt = (RMPEncoding.ProtocolId)msg.PopByte();
 			switch (pt)
 			{
-				case Encoding.ProtocolId.RPC:
+				case RMPEncoding.ProtocolId.RPC:
 					ReceiveRPC(msg);
 					break;
 
-				case Encoding.ProtocolId.Replicate:
+				case RMPEncoding.ProtocolId.Replicate:
 					ReceiveReplicate(msg);
 					break;
 
-				case Encoding.ProtocolId.Remove:
+				case RMPEncoding.ProtocolId.Remove:
 					ReceiveRemove(msg);
 					break;
 			}
@@ -127,13 +127,13 @@ namespace ChickenIngot.Networking
 			}
 
 			var msg = new Packet();
-			msg.PushByte((byte)Encoding.ProtocolId.RPC);
+			msg.PushByte((byte)RMPEncoding.ProtocolId.RPC);
 			msg.PushString(sender.Guid);
 			msg.PushString(methodName);
 			msg.PushInt32(parameters.Length);
 
 			foreach (object param in parameters)
-				Encoding.PushParameter(msg, param);
+				RMPEncoding.PushParameter(msg, param);
 
 			NetworkService.Send(HostId, ConnectionId, msg);
 		}
@@ -142,7 +142,7 @@ namespace ChickenIngot.Networking
 		public void SendReplicate(RMPNetworkView view)
 		{
 			var msg = new Packet();
-			msg.PushByte((byte)Encoding.ProtocolId.Replicate);
+			msg.PushByte((byte)RMPEncoding.ProtocolId.Replicate);
 			msg.PushInt32(view.ReplicationTableIndex);
 			msg.PushString(view.Guid);
 
@@ -156,7 +156,7 @@ namespace ChickenIngot.Networking
 		public void SendRemove(RMPNetworkView view)
 		{
 			var msg = new Packet();
-			msg.PushByte((byte)Encoding.ProtocolId.Remove);
+			msg.PushByte((byte)RMPEncoding.ProtocolId.Remove);
 			msg.PushString(view.Guid);
 			NetworkService.Send(HostId, ConnectionId, msg);
 		}
