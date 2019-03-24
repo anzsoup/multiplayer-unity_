@@ -14,6 +14,7 @@ namespace ChickenIngot.Networking
 		private static INetworkEventHandler _handler = null;
 		private byte[] _buffer = new byte[Packet.BUFFER_LENGTH];
 
+		public static bool Exists { get { return _instance != null; } }
 		public static bool IsServer { get; private set; }
 		public static bool IsOnline { get; private set; }
 
@@ -105,13 +106,16 @@ namespace ChickenIngot.Networking
 
 		void OnDestroy()
 		{
-			_instance = null;
+			if (_instance == this)
+			{
+				_instance = null;
 
-			if (_handler != null)
-				_handler.Stop();
+				if (_handler != null)
+					_handler.Stop();
 
-			NetworkTransport.Shutdown();
-			IsOnline = false;
+				NetworkTransport.Shutdown();
+				IsOnline = false;
+			}
 		}
 
 		private static bool CheckInited()

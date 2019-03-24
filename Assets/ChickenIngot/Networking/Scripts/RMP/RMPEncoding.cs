@@ -1,8 +1,23 @@
 ﻿using UnityEngine;
+using System;
+using System.Reflection;
+using System.Collections.Generic;
 
 namespace ChickenIngot.Networking
 {
-	public static class Encoding
+	// 미완성
+	[AttributeUsage(AttributeTargets.Method)]
+	public class RMPEncodingRuleAttribute : Attribute
+	{
+		public Type Type { get; private set; }
+
+		public RMPEncodingRuleAttribute(Type type)
+		{
+			Type = type;
+		}
+	}
+
+	public static class RMPEncoding
 	{
 		public enum ProtocolId : byte
 		{
@@ -24,6 +39,38 @@ namespace ChickenIngot.Networking
 			Quaternion,
 			Vector2Int,
 			Vector3Int,
+		}
+
+		private static Dictionary<string, Action> _rules;
+
+		public static void RegisterEncodingRules()
+		{
+			_rules = new Dictionary<string, Action>();
+			var flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+			
+			var types = Assembly.GetExecutingAssembly().GetTypes();
+			foreach (var type in types)
+			{
+				var methods = type.GetMethods(flags);
+				foreach (var method in methods)
+				{
+					var attribute = Attribute.GetCustomAttribute(
+						method, typeof(RMPEncodingRuleAttribute)) as RMPEncodingRuleAttribute;
+
+					if (attribute == null)
+						continue;
+
+					var key = attribute.Type.ToString();
+					if (_rules.ContainsKey(key))
+					{
+						Debug.LogWarning(string.Format("Multiple definition of RMP encoding rule. : {0}", key));
+						continue;
+					}
+
+					var proc = Delegate.CreateDelegate(typeof(Action), method) as Action;
+					_rules.Add(key, proc);
+				}
+			}
 		}
 
 		public static void PushParameter(Packet msg, object parameter)
