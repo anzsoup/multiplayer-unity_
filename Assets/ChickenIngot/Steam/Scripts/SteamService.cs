@@ -66,6 +66,7 @@ namespace ChickenIngot.Steam
 
 		#endregion
 
+#if UNITY_EDITOR
 		[MenuItem("GameObject/Steam Service", priority = 30)]
 		static void CreateSteamService()
 		{
@@ -73,9 +74,10 @@ namespace ChickenIngot.Steam
 			var steam = go.GetComponent<SteamService>();
 			var view = go.GetComponent<RMPNetworkView>();
 			steam._view = view;
-			view.MessageReceivers.Add(steam);
+			view.AddMessageReceiver(steam);
 			Undo.RegisterCreatedObjectUndo(go, "Create Steam Service");
 		}
+#endif
 
 		void Awake()
 		{
