@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace ChickenIngot.Networking
@@ -41,6 +42,15 @@ namespace ChickenIngot.Networking
 		public static DisconnectFromServerEvent OnDisconnectFromServer { get { return _instance._onDisconnectFromServer; } }
 
 		#endregion
+
+#if UNITY_EDITOR
+		[MenuItem("GameObject/RMP Network Service", priority = 30)]
+		static void CreateRMPUnityService()
+		{
+			var go = new GameObject("RMP Network Service", typeof(RMPNetworkService));
+			Undo.RegisterCreatedObjectUndo(go, "Create RMP Unity Service");
+		}
+#endif
 
 		void Awake()
 		{
