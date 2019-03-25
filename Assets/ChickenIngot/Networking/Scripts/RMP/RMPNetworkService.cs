@@ -96,7 +96,7 @@ namespace ChickenIngot.Networking
 
 		public static void StopServer()
 		{
-			NetworkService.EndServer();
+			NetworkService.StopServer();
 			OnServerClose.Invoke();
 		}
 
@@ -107,7 +107,7 @@ namespace ChickenIngot.Networking
 
 		public static void StopClient()
 		{
-			NetworkService.EndClient();
+			NetworkService.StopClient();
 		}
 
 		/// <summary>

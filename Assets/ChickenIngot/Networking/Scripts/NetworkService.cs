@@ -165,17 +165,17 @@ namespace ChickenIngot.Networking
 			}
 		}
 
-		public static void EndServer()
+		public static void StopServer()
 		{
 			if (CheckInited())
 			{
 				if (!IsOnline)
 				{
-					Debug.LogWarning("You are not currently in online state. EndServer() is aborted.");
+					Debug.LogWarning("You are not currently in online state. StopServer() is aborted.");
 				}
 				else if (!IsServer)
 				{
-					Debug.LogWarning("You are not a server. EndServer() is aborted.");
+					Debug.LogWarning("You are not a server. StopServer() is aborted.");
 				}
 				
 				_handler.Stop();
@@ -198,17 +198,17 @@ namespace ChickenIngot.Networking
 			}
 		}
 
-		public static void EndClient()
+		public static void StopClient()
 		{
 			if (CheckInited())
 			{
 				if (!IsOnline)
 				{
-					Debug.LogWarning("You are not currently in online state. EndClient() is aborted.");
+					Debug.LogWarning("You are not currently in online state. StopClient() is aborted.");
 				}
 				else if (IsServer)
 				{
-					Debug.LogWarning("You are not a client. EndClient() is aborted.");
+					Debug.LogWarning("You are not a client. StopClient() is aborted.");
 				}
 				
 				_handler.Stop();
