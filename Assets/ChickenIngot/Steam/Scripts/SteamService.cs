@@ -126,23 +126,8 @@ namespace ChickenIngot.Steam
 
 		void OnDestroy()
 		{
-			if (Me != null)
-			{
-				Me.CancelAuthSessionTicket();
-				Me = null;
-			}
-
-			if (_client != null)
-			{
-				_client.Dispose();
-				_client = null;
-			}
-
-			if (_server != null)
-			{
-				_server.Dispose();
-				_server = null;
-			}
+			StopSteamClient();
+			StopSteamServer();
 		}
 
 		private void UpdateClient()
@@ -316,6 +301,8 @@ namespace ChickenIngot.Steam
 
 			// accept 알림
 			_view.RPC(client, "clRPC_ConnectionAccepted");
+
+			OnSteamUserJoin.Invoke(steamuser);
 		}
 
 		[ServerOnly]
@@ -333,6 +320,8 @@ namespace ChickenIngot.Steam
 			Users.Remove(steamuser);
 
 			Debug.Log(string.Format("Steam user disconnected. : {0}", steamuser.Username));
+
+			OnSteamUserExit.Invoke(steamuser);
 		}
 
 		[ServerOnly]
@@ -425,13 +414,24 @@ namespace ChickenIngot.Steam
 			return true;
 		}
 
-		private void EndSteamClient()
+		private void StopSteamClient()
 		{
-
+			if (_client != null)
+			{
+				_client.Dispose();
+				_client = null;
+				Me.CancelAuthSessionTicket();
+				Me = null;
+			}
 		}
-		private void EndSteamServer()
+		private void StopSteamServer()
 		{
-
+			if (_server != null)
+			{
+				_server.Auth.OnAuthChange = null;
+				_server.Dispose();
+				_server = null;
+			}
 		}
 
 		[RMP]
@@ -489,13 +489,14 @@ namespace ChickenIngot.Steam
 				return;
 			}
 
-			_onSteamServerOpen.Invoke();
+			OnSteamServerOpen.Invoke();
 		}
 
 		[ServerOnly]
 		private void _OnServerClose()
 		{
-			_onSteamServerClose.Invoke();
+			StopSteamServer();
+			OnSteamServerClose.Invoke();
 		}
 
 		[ServerOnly]
@@ -519,17 +520,7 @@ namespace ChickenIngot.Steam
 		private void _OnDisconnectFromServer(RMPPeer server)
 		{
 			Me.CancelAuthSessionTicket();
-			_onExitSteamServer.Invoke();
-		}
-
-		public static void DisposeServer()
-		{
-			if (_instance._server != null)
-			{
-				_instance._server.Auth.OnAuthChange = null;
-				_instance._server.Dispose();
-				_instance._server = null;
-			}
+			OnExitSteamServer.Invoke();
 		}
 	}
 }
