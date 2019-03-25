@@ -30,7 +30,6 @@ namespace ChickenIngot.Networking
 		// 서로 다른 클라이언트에서 동일한 오브젝트를 식별하기 위한 키.
 		[SerializeField] [ReadOnly]
 		private string _guid;
-		[Tooltip("여기에 등록해야 해당 스크립트가 RPC 메시지를 받을 수 있다.")]
 		[SerializeField]
 		private MonoBehaviour[] _messageReceivers;
 		private MessageCache _messageCache;
@@ -136,6 +135,25 @@ namespace ChickenIngot.Networking
 					UnityEditor.PrefabUtility.DisconnectPrefabInstance(gameObject);
 
 				}
+			}
+		}
+
+		public void AddMessageReceiver(MonoBehaviour receiver)
+		{
+			if (receiver == null) return;
+
+			if (_messageReceivers == null)
+			{
+				_messageReceivers = new MonoBehaviour[1];
+				_messageReceivers[0] = receiver;
+			}
+			else
+			{
+				var length = _messageReceivers.Length;
+				var newArray = new MonoBehaviour[length + 1];
+				Array.Copy(_messageReceivers, newArray, length);
+				newArray[length] = receiver;
+				_messageReceivers = newArray;
 			}
 		}
 #endif
