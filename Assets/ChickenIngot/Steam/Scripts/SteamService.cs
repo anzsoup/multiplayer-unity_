@@ -5,6 +5,7 @@ using ChickenIngot.Networking;
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
+using UnityEditor;
 
 namespace ChickenIngot.Steam
 {
@@ -64,6 +65,17 @@ namespace ChickenIngot.Steam
 		public ExitSteamServerEvent OnExitSteamServer { get { return _onExitSteamServer; } }
 
 		#endregion
+
+		[MenuItem("GameObject/Steam Service", priority = 30)]
+		static void CreateSteamService()
+		{
+			var go = new GameObject("Steam Service", typeof(RMPNetworkView), typeof(SteamService));
+			var steam = go.GetComponent<SteamService>();
+			var view = go.GetComponent<RMPNetworkView>();
+			steam._view = view;
+			view.MessageReceivers.Add(steam);
+			Undo.RegisterCreatedObjectUndo(go, "Create Steam Service");
+		}
 
 		void Awake()
 		{
