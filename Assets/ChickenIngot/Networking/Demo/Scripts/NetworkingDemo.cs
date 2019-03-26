@@ -7,10 +7,10 @@ namespace ChickenIngot.Networking.Demo
 	///		RMPUnityService 에 메소드를 등록하여 네트워크 이벤트를 사용할 수 있다.
 	/// -----------------------------------------------------------------------------------
 
-	public class Demo : MonoBehaviour
+	public class NetworkingDemo : MonoBehaviour
 	{
 		[SerializeField]
-		private DemoReplicate _demoSpawning;
+		private NetworkingDemoReplicate _demoSpawning;
 
 		void Awake()
 		{

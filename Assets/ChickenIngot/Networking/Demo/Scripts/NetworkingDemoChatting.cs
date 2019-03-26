@@ -8,7 +8,7 @@ namespace ChickenIngot.Networking.Demo
 	///		RMPNetworkView 의 'Message Receivers' 에 등록되어 있어야 한다.
 	/// -----------------------------------------------------------------------------------
 
-	public class DemoChatting : MonoBehaviour
+	public class NetworkingDemoChatting : MonoBehaviour
 	{
 		[SerializeField]
 		private RMPNetworkView _view;
