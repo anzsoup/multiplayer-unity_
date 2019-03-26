@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 namespace ChickenIngot.Steam.Demo
 {
 	public class SteamDemo : MonoBehaviour
 	{
-		void Start()
+		IEnumerator Start()
 		{
+			while (!SteamService.Initialized)
+				yield return null;
+
 			SteamService.StartSteamClient();
 		}
 

@@ -318,6 +318,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8408a4e78816c7a418406c2e664e0e2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _modDir: steam-demo
+  _gameDesc: Steam Demo
+  _version: 1.0
+  _name: Steam Demo Server
+  _maxPlayers: 20
 --- !u!114 &707077118
 MonoBehaviour:
   m_ObjectHideFlags: 0

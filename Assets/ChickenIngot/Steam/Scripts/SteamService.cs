@@ -101,8 +101,7 @@ namespace ChickenIngot.Steam
 		{
 			// Configure us for this unity platform
 			Facepunch.Steamworks.Config.ForUnity(Application.platform.ToString());
-
-			Initialized = false;
+			
 			AppId = _appId;
 			Me = null;
 			Users = new List<SteamUser>();
@@ -117,6 +116,8 @@ namespace ChickenIngot.Steam
 				RMPNetworkService.OnClientDisconnect.AddListener(_OnClientDisconnect);
 				RMPNetworkService.OnDisconnectFromServer.AddListener(_OnDisconnectFromServer);
 			}
+
+			Initialized = true;
 		}
 
 		void Update()
@@ -389,13 +390,12 @@ namespace ChickenIngot.Steam
 			if (!_instance._server.IsValid)
 			{
 				_instance._server = null;
-				Debug.LogError("Failed to initialize steam server.");
+				Debug.LogError("Couldn't initialize steam server.");
 				return false;
 			}
 
 			Server.Instance.Auth.OnAuthChange = OnAuthChange;
 			Debug.Log("Steam server initialized.");
-			Initialized = true;
 			return true;
 		}
 
@@ -416,13 +416,12 @@ namespace ChickenIngot.Steam
 			if (!_instance._client.IsValid)
 			{
 				_instance._client = null;
-				Debug.LogError("Failed to initialize steam client.");
+				Debug.LogError("Couldn't initialize steam client.");
 				return false;
 			}
 
 			Me = new SteamUser(null, _instance._client.SteamId, _instance._client.Username);
 			Debug.Log(string.Format("Steam client initialized : {0} / {1}", Me.Username, Me.SteamId));
-			Initialized = true;
 			return true;
 		}
 

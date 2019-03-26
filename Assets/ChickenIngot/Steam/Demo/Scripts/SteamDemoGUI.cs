@@ -1,10 +1,21 @@
 ﻿using UnityEngine;
 using ChickenIngot.Networking;
+using Facepunch.Steamworks;
 
 namespace ChickenIngot.Steam.Demo
 {
 	public class SteamDemoGUI : MonoBehaviour
 	{
+		[SerializeField]
+		private string _modDir = "steam-demo";
+		[SerializeField]
+		private string _gameDesc = "Steam Demo";
+		[SerializeField]
+		private string _version = "1.0";
+		[SerializeField]
+		private string _name = "Steam Demo Server";
+		[SerializeField]
+		private int _maxPlayers = 20;
 		private string _log;
 
 		void Start()
@@ -61,7 +72,7 @@ namespace ChickenIngot.Steam.Demo
 
 		private void UserInfo()
 		{
-			if (SteamService.Initialized)
+			if (Client.Instance != null)
 			{
 				string info = string.Format("Username : {0}", SteamService.Me.Username);
 				info += string.Format("\nSteam Id : {0}", SteamService.Me.SteamId);
@@ -96,11 +107,19 @@ namespace ChickenIngot.Steam.Demo
 			{
 				if (GUILayout.Button("Server", GUILayout.Width(100)))
 				{
+					SteamService.Config.ModDir = _modDir;
+					SteamService.Config.GameDescription = _gameDesc;
+					SteamService.Config.Version = _version;
+					SteamService.Config.Name = _name;
+					SteamService.Config.MaxPlayers = _maxPlayers;
 					RMPNetworkService.StartServer(22277, 10);
 				}
-				if (GUILayout.Button("Client", GUILayout.Width(100)))
+				if (Client.Instance != null)
 				{
-					RMPNetworkService.StartClient("127.0.0.1", 22277);
+					if (GUILayout.Button("Client", GUILayout.Width(100)))
+					{
+						RMPNetworkService.StartClient("127.0.0.1", 22277);
+					}
 				}
 			}
 		}

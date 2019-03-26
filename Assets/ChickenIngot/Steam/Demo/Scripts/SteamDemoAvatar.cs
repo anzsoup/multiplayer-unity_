@@ -14,7 +14,7 @@ namespace ChickenIngot.Steam.Demo
 
 		IEnumerator Start()
 		{
-			while (!SteamService.Initialized)
+			while (Client.Instance == null)
 				yield return null;
 
 			var me = SteamService.Me;
