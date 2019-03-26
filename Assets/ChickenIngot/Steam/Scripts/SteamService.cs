@@ -108,7 +108,7 @@ namespace ChickenIngot.Steam
 			Config = new SteamConfig();
 
 			// RMP 네트워킹을 사용중일 경우 자동으로 스팀서버가 연동된다.
-			if (RMPNetworkService.Exists)
+			if (RMPNetworkService.Initialized)
 			{
 				RMPNetworkService.OnServerOpen.AddListener(_OnServerOpen);
 				RMPNetworkService.OnServerClose.AddListener(_OnServerClose);
