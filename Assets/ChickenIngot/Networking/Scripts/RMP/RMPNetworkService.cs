@@ -14,7 +14,7 @@ namespace ChickenIngot.Networking
 		[SerializeField]
 		private RMPNetworkView[] _replicateTable;
 
-		public static bool Exists { get { return _instance != null; } }
+		public static bool Initialized { get; private set; }
 		public static RMPNetworkView[] ReplicateTable { get { return _instance._replicateTable; } }
 
 		#region Events
@@ -57,6 +57,7 @@ namespace ChickenIngot.Networking
 			if (_instance == null)
 			{
 				_instance = this;
+				Initialized = true;
 			}
 			else
 			{
@@ -85,6 +86,7 @@ namespace ChickenIngot.Networking
 			if (_instance == this)
 			{
 				_instance = null;
+				Initialized = false;
 			}
 		}
 
