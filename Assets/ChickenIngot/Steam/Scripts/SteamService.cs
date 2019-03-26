@@ -38,6 +38,7 @@ namespace ChickenIngot.Steam
 		private ConnectionOperation _waitingUser;
 
 		public static bool Initialized { get; private set; }
+		public static uint AppId { get; private set; }
 		public static SteamUser Me { get; private set; }
 		public static List<SteamUser> Users { get; private set; }
 		public static SteamConfig Config { get; set; }
@@ -102,6 +103,7 @@ namespace ChickenIngot.Steam
 			Facepunch.Steamworks.Config.ForUnity(Application.platform.ToString());
 
 			Initialized = false;
+			AppId = _appId;
 			Me = null;
 			Users = new List<SteamUser>();
 			Config = new SteamConfig();
@@ -370,23 +372,6 @@ namespace ChickenIngot.Steam
 			}
 		}
 
-		private static bool StartSteamClient()
-		{
-			_instance._client = new Client(_instance._appId);
-
-			if (!_instance._client.IsValid)
-			{
-				_instance._client = null;
-				Debug.LogError("Failed to initialize steam client.");
-				return false;
-			}
-
-			Me = new SteamUser(null, _instance._client.SteamId, _instance._client.Username);
-			Debug.Log(string.Format("Steam client initialized : {0} / {1}", Me.Username, Me.SteamId));
-			Initialized = true;
-			return true;
-		}
-
 		private static bool StartSteamServer(Action<ulong, ulong, ServerAuth.Status> OnAuthChange)
 		{
 			if (_instance._server != null)
@@ -414,16 +399,6 @@ namespace ChickenIngot.Steam
 			return true;
 		}
 
-		private void StopSteamClient()
-		{
-			if (_client != null)
-			{
-				_client.Dispose();
-				_client = null;
-				Me.CancelAuthSessionTicket();
-				Me = null;
-			}
-		}
 		private void StopSteamServer()
 		{
 			if (_server != null)
@@ -431,6 +406,34 @@ namespace ChickenIngot.Steam
 				_server.Auth.OnAuthChange = null;
 				_server.Dispose();
 				_server = null;
+			}
+		}
+
+		public static bool StartSteamClient()
+		{
+			_instance._client = new Client(_instance._appId);
+
+			if (!_instance._client.IsValid)
+			{
+				_instance._client = null;
+				Debug.LogError("Failed to initialize steam client.");
+				return false;
+			}
+
+			Me = new SteamUser(null, _instance._client.SteamId, _instance._client.Username);
+			Debug.Log(string.Format("Steam client initialized : {0} / {1}", Me.Username, Me.SteamId));
+			Initialized = true;
+			return true;
+		}
+
+		public void StopSteamClient()
+		{
+			if (_client != null)
+			{
+				_client.Dispose();
+				_client = null;
+				Me.CancelAuthSessionTicket();
+				Me = null;
 			}
 		}
 
