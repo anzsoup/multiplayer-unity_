@@ -15,7 +15,7 @@ namespace ChickenIngot.Networking.Demo
 	///    프리팹이 RMPUnityService 의 'Replicate Table' 에 등록되어 있어야 한다.
 	/// -----------------------------------------------------------------------------------
 
-	public class NetworkingDemoCube : MonoBehaviour
+	public class DemoCube : MonoBehaviour
 	{
 		[SerializeField]
 		private RMPNetworkView _view;
@@ -25,7 +25,7 @@ namespace ChickenIngot.Networking.Demo
 
 		public RMPNetworkView View { get { return _view; } }
 
-		public static readonly List<NetworkingDemoCube> CUBES = new List<NetworkingDemoCube>();
+		public static readonly List<DemoCube> CUBES = new List<DemoCube>();
 		public static void Clear()
 		{
 			foreach (var cube in CUBES)

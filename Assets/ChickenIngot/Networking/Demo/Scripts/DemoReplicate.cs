@@ -8,18 +8,18 @@ namespace ChickenIngot.Networking.Demo
 	///		자동으로 Replicate 된 객체로 취급된다.
 	/// ---------------------------------------------------------------------------
 
-	public class NetworkingDemoReplicate : MonoBehaviour
+	public class DemoReplicate : MonoBehaviour
 	{
 		[SerializeField]
 		private RMPNetworkView _view;
 		[SerializeField]
 		private Camera _camera;
 		[SerializeField]
-		private NetworkingDemoCube _cubePrefab;
+		private DemoCube _cubePrefab;
 
 		void OnDisable()
 		{
-			NetworkingDemoCube.Clear();
+			DemoCube.Clear();
 		}
 
 		void Update()

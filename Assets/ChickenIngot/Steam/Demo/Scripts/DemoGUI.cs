@@ -4,7 +4,7 @@ using Facepunch.Steamworks;
 
 namespace ChickenIngot.Steam.Demo
 {
-	public class SteamDemoGUI : MonoBehaviour
+	public class DemoGUI : MonoBehaviour
 	{
 		[SerializeField]
 		private string _modDir = "steam-demo";

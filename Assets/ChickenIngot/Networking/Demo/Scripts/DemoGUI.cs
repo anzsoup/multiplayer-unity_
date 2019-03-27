@@ -2,10 +2,10 @@
 
 namespace ChickenIngot.Networking.Demo
 {
-	public class NetworkingDemoGUI : MonoBehaviour
+	public class DemoGUI : MonoBehaviour
 	{
 		[SerializeField]
-		private NetworkingDemoChatting _demoChatting;
+		private DemoChatting _demoChatting;
 		private string _log;
 		private string _chatInput;
 

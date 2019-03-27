@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace ChickenIngot.Steam.Demo
 {
-	public class SteamDemo : MonoBehaviour
+	public class Demo : MonoBehaviour
 	{
 		IEnumerator Start()
 		{

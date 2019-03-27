@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace ChickenIngot.Steam.Demo
 {
-	public class SteamDemoAvatar : MonoBehaviour
+	public class DemoAvatar : MonoBehaviour
 	{
 		[SerializeField]
 		private RawImage _ui;
