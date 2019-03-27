@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Facepunch.Steamworks;
 using UnityEngine.UI;
 
 namespace ChickenIngot.Steam.Demo
@@ -10,15 +9,15 @@ namespace ChickenIngot.Steam.Demo
 		[SerializeField]
 		private RawImage _ui;
 		[SerializeField]
-		private Friends.AvatarSize _size;
+		private Facepunch.Steamworks.Friends.AvatarSize _size;
 
 		IEnumerator Start()
 		{
-			while (Client.Instance == null)
+			while (Steam.Client == null)
 				yield return null;
 
-			var me = SteamService.Me;
-			Client.Instance.Friends.GetAvatar(_size, me.SteamId, (image) => OnImage(image));
+			var me = Steam.Me;
+			Steam.Client.Friends.GetAvatar(_size, me.SteamId, (image) => OnImage(image));
 		}
 
 		private void OnImage(Facepunch.Steamworks.Image image)

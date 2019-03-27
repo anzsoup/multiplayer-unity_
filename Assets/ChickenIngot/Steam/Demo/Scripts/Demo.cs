@@ -5,14 +5,6 @@ namespace ChickenIngot.Steam.Demo
 {
 	public class Demo : MonoBehaviour
 	{
-		IEnumerator Start()
-		{
-			while (!SteamService.Initialized)
-				yield return null;
-
-			SteamService.StartSteamClient();
-		}
-
 		public void _OnSteamUserJoin(SteamUser user)
 		{
 			Debug.LogWarning(string.Format("\t** Steam User Joined. : {0} **", user.Username));

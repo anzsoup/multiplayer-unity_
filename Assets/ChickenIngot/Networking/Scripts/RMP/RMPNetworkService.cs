@@ -14,7 +14,7 @@ namespace ChickenIngot.Networking
 		[SerializeField]
 		private RMPNetworkView[] _replicateTable;
 
-		public static bool Initialized { get; private set; }
+		public static bool IsInitialized { get; private set; }
 		public static RMPNetworkView[] ReplicateTable { get { return _instance._replicateTable; } }
 
 		#region Events
@@ -45,10 +45,10 @@ namespace ChickenIngot.Networking
 
 #if UNITY_EDITOR
 		[MenuItem("GameObject/RMP Network Service", priority = 30)]
-		static void CreateRMPUnityService()
+		static void CreateGameObject()
 		{
 			var go = new GameObject("RMP Network Service", typeof(RMPNetworkService));
-			Undo.RegisterCreatedObjectUndo(go, "Create RMP Unity Service");
+			Undo.RegisterCreatedObjectUndo(go, "Create RMP Network Service");
 		}
 #endif
 
@@ -57,7 +57,7 @@ namespace ChickenIngot.Networking
 			if (_instance == null)
 			{
 				_instance = this;
-				Initialized = true;
+				IsInitialized = true;
 			}
 			else
 			{
@@ -86,7 +86,7 @@ namespace ChickenIngot.Networking
 			if (_instance == this)
 			{
 				_instance = null;
-				Initialized = false;
+				IsInitialized = false;
 			}
 		}
 

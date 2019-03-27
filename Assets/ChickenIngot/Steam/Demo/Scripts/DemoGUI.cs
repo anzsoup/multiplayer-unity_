@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using ChickenIngot.Networking;
-using Facepunch.Steamworks;
 
 namespace ChickenIngot.Steam.Demo
 {
@@ -66,16 +65,16 @@ namespace ChickenIngot.Steam.Demo
 
 			GUILayout.BeginHorizontal();
 			GUILayout.Label(title);
-			GUILayout.Label(string.Format("AppId : {0}", SteamService.AppId));
+			GUILayout.Label(string.Format("AppId : {0}", Steam.AppId));
 			GUILayout.EndHorizontal();
 		}
 
 		private void UserInfo()
 		{
-			if (Client.Instance != null)
+			if (Steam.Client != null)
 			{
-				string info = string.Format("Username : {0}", SteamService.Me.Username);
-				info += string.Format("\nSteam Id : {0}", SteamService.Me.SteamId);
+				string info = string.Format("Username : {0}", Steam.Me.Username);
+				info += string.Format("\nSteam Id : {0}", Steam.Me.SteamId);
 
 				GUILayout.Label(info);
 			}
@@ -107,14 +106,14 @@ namespace ChickenIngot.Steam.Demo
 			{
 				if (GUILayout.Button("Server", GUILayout.Width(100)))
 				{
-					SteamService.Config.ModDir = _modDir;
-					SteamService.Config.GameDescription = _gameDesc;
-					SteamService.Config.Version = _version;
-					SteamService.Config.Name = _name;
-					SteamService.Config.MaxPlayers = _maxPlayers;
+					Steam.Config.ModDir = _modDir;
+					Steam.Config.GameDescription = _gameDesc;
+					Steam.Config.Version = _version;
+					Steam.Config.Name = _name;
+					Steam.Config.MaxPlayers = _maxPlayers;
 					RMPNetworkService.StartServer(22277, 10);
 				}
-				if (Client.Instance != null)
+				if (Steam.Client != null)
 				{
 					if (GUILayout.Button("Client", GUILayout.Width(100)))
 					{

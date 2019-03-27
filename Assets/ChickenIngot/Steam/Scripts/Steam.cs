@@ -9,7 +9,7 @@ using UnityEditor;
 
 namespace ChickenIngot.Steam
 {
-	public class SteamService : MonoBehaviour
+	public class Steam : MonoBehaviour
 	{
 		private enum ConnectionOperationType
 		{
@@ -26,22 +26,24 @@ namespace ChickenIngot.Steam
 			public ulong steamId;
 		}
 
-		private static SteamService _instance = null;
+		private static Steam _instance = null;
 
+		[SerializeField]
+		private RMPNetworkView _view;
 		[SerializeField]
 		private uint _appId;
 		[SerializeField]
-		private RMPNetworkView _view;
-		private Client _client;
-		private Server _server;
+		private bool _isServerOnly;
 		private readonly Queue<ConnectionOperation> _operationQueue = new Queue<ConnectionOperation>();
 		private ConnectionOperation _waitingUser;
 
-		public static bool Initialized { get; private set; }
+		public static bool IsInitialized { get; private set; }
 		public static uint AppId { get; private set; }
 		public static SteamUser Me { get; private set; }
 		public static List<SteamUser> Users { get; private set; }
 		public static SteamConfig Config { get; set; }
+		public static Client Client { get; private set; }
+		public static Server Server { get; private set; }
 
 		#region Events
 
@@ -68,15 +70,23 @@ namespace ChickenIngot.Steam
 		#endregion
 
 #if UNITY_EDITOR
-		[MenuItem("GameObject/Steam Service", priority = 30)]
-		static void CreateSteamService()
+		[MenuItem("GameObject/Steam", priority = 30)]
+		static void CreateGameObject()
 		{
-			var go = new GameObject("Steam Service", typeof(RMPNetworkView), typeof(SteamService));
-			var steam = go.GetComponent<SteamService>();
+			var go = new GameObject("Steam", typeof(RMPNetworkView), typeof(Steam));
+			var steam = go.GetComponent<Steam>();
 			var view = go.GetComponent<RMPNetworkView>();
 			steam._view = view;
 			view.AddMessageReceiver(steam);
-			Undo.RegisterCreatedObjectUndo(go, "Create Steam Service");
+			Undo.RegisterCreatedObjectUndo(go, "Create Steam");
+		}
+
+		public static void SetServerOnlyOption(bool value)
+		{
+			if (IsInitialized)
+			{
+				_instance._isServerOnly = value;
+			}
 		}
 #endif
 
@@ -108,7 +118,7 @@ namespace ChickenIngot.Steam
 			Config = new SteamConfig();
 
 			// RMP 네트워킹을 사용중일 경우 자동으로 스팀서버가 연동된다.
-			if (RMPNetworkService.Initialized)
+			if (RMPNetworkService.IsInitialized)
 			{
 				RMPNetworkService.OnServerOpen.AddListener(_OnServerOpen);
 				RMPNetworkService.OnServerClose.AddListener(_OnServerClose);
@@ -117,7 +127,10 @@ namespace ChickenIngot.Steam
 				RMPNetworkService.OnDisconnectFromServer.AddListener(_OnDisconnectFromServer);
 			}
 
-			Initialized = true;
+			if (!_isServerOnly)
+				StartSteamClient();
+
+			IsInitialized = true;
 		}
 
 		void Update()
@@ -135,13 +148,13 @@ namespace ChickenIngot.Steam
 
 		private void UpdateClient()
 		{
-			if (_client == null)
+			if (Client == null)
 				return;
 
 			try
 			{
 				UnityEngine.Profiling.Profiler.BeginSample("Steam client update");
-				_client.Update();
+				Client.Update();
 			}
 			finally
 			{
@@ -151,13 +164,13 @@ namespace ChickenIngot.Steam
 
 		private void UpdateServer()
 		{
-			if (_server == null)
+			if (Server == null)
 				return;
 
 			try
 			{
 				UnityEngine.Profiling.Profiler.BeginSample("Steam server update");
-				_server.Update();
+				Server.Update();
 			}
 			finally
 			{
@@ -375,21 +388,21 @@ namespace ChickenIngot.Steam
 
 		private static bool StartSteamServer(Action<ulong, ulong, ServerAuth.Status> OnAuthChange)
 		{
-			if (_instance._server != null)
+			if (Server != null)
 				return false;
 
 			var serverInit = new ServerInit(Config.ModDir, Config.GameDescription);
 			serverInit.Secure = Config.Secure;
 			serverInit.VersionString = Config.Version;
 
-			_instance._server = new Server(_instance._appId, serverInit);
-			_instance._server.ServerName = Config.Name;
-			_instance._server.MaxPlayers = Config.MaxPlayers;
-			_instance._server.LogOnAnonymous();
+			Server = new Server(_instance._appId, serverInit);
+			Server.ServerName = Config.Name;
+			Server.MaxPlayers = Config.MaxPlayers;
+			Server.LogOnAnonymous();
 
-			if (!_instance._server.IsValid)
+			if (!Server.IsValid)
 			{
-				_instance._server = null;
+				Server = null;
 				Debug.LogError("Couldn't initialize steam server.");
 				return false;
 			}
@@ -401,36 +414,36 @@ namespace ChickenIngot.Steam
 
 		private void StopSteamServer()
 		{
-			if (_server != null)
+			if (Server != null)
 			{
-				_server.Auth.OnAuthChange = null;
-				_server.Dispose();
-				_server = null;
+				Server.Auth.OnAuthChange = null;
+				Server.Dispose();
+				Server = null;
 			}
 		}
 
-		public static bool StartSteamClient()
+		private static bool StartSteamClient()
 		{
-			_instance._client = new Client(_instance._appId);
+			Client = new Client(_instance._appId);
 
-			if (!_instance._client.IsValid)
+			if (!Client.IsValid)
 			{
-				_instance._client = null;
+				Client = null;
 				Debug.LogError("Couldn't initialize steam client.");
 				return false;
 			}
 
-			Me = new SteamUser(null, _instance._client.SteamId, _instance._client.Username);
+			Me = new SteamUser(null, Client.SteamId, Client.Username);
 			Debug.Log(string.Format("Steam client initialized : {0} / {1}", Me.Username, Me.SteamId));
 			return true;
 		}
 
-		public void StopSteamClient()
+		private void StopSteamClient()
 		{
-			if (_client != null)
+			if (Client != null)
 			{
-				_client.Dispose();
-				_client = null;
+				Client.Dispose();
+				Client = null;
 				Me.CancelAuthSessionTicket();
 				Me = null;
 			}
