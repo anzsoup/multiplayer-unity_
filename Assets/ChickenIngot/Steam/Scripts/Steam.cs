@@ -47,23 +47,26 @@ namespace ChickenIngot.Steam
 
 		#region Events
 
+		[Header("Server Side Events")]
+		[SerializeField]
+		private StartSteamServerEvent _onStartSteamServer;
+		[SerializeField]
+		private StopSteamServerEvent _onStopSteamServer;
 		[SerializeField]
 		private SteamUserJoinEvent _onSteamUserJoin;
 		[SerializeField]
 		private SteamUserExitEvent _onSteamUserExit;
-		[SerializeField]
-		private SteamServerOpenEvent _onSteamServerOpen;
-		[SerializeField]
-		private SteamServerCloseEvent _onSteamServerClose;
+
+		[Header("Client Side Events")]
 		[SerializeField]
 		private JoinSteamServerEvent _onJoinSteamServer;
 		[SerializeField]
 		private ExitSteamServerEvent _onExitSteamServer;
 
+		public StartSteamServerEvent OnStartSteamServer { get { return _onStartSteamServer; } }
+		public StopSteamServerEvent OnStopSteamServer { get { return _onStopSteamServer; } }
 		public SteamUserJoinEvent OnSteamUserJoin { get { return _onSteamUserJoin; } }
 		public SteamUserExitEvent OnSteamUserExit { get { return _onSteamUserExit; } }
-		public SteamServerOpenEvent OnSteamServerOpen { get { return _onSteamServerOpen; } }
-		public SteamServerCloseEvent OnSteamServerClose { get { return _onSteamServerClose; } }
 		public JoinSteamServerEvent OnJoinSteamServer { get { return _onJoinSteamServer; } }
 		public ExitSteamServerEvent OnExitSteamServer { get { return _onExitSteamServer; } }
 
@@ -120,8 +123,8 @@ namespace ChickenIngot.Steam
 			// RMP 네트워킹을 사용중일 경우 자동으로 스팀서버가 연동된다.
 			if (RMPNetworkService.IsInitialized)
 			{
-				RMPNetworkService.OnServerOpen.AddListener(_OnServerOpen);
-				RMPNetworkService.OnServerClose.AddListener(_OnServerClose);
+				RMPNetworkService.OnStartServer.AddListener(_OnServerOpen);
+				RMPNetworkService.OnStopServer.AddListener(_OnServerClose);
 				RMPNetworkService.OnClientConnect.AddListener(_OnClientConnect);
 				RMPNetworkService.OnClientDisconnect.AddListener(_OnClientDisconnect);
 				RMPNetworkService.OnDisconnectFromServer.AddListener(_OnDisconnectFromServer);
@@ -186,7 +189,7 @@ namespace ChickenIngot.Steam
 				if (_waitingUser == null && _operationQueue.Count > 0)
 				{
 					ConnectionOperation args = _operationQueue.Dequeue();
-					Debug.Log(string.Format("Steam user {0}...", args.type));
+					if (Server == null) return;
 					switch (args.type)
 					{
 						case ConnectionOperationType.Connecting:
@@ -235,9 +238,9 @@ namespace ChickenIngot.Steam
 			var ticketData = user.steamTicketData;
 			var steamID = BitConverter.ToUInt64(user.steamIdData, 0);
 			var username = user.username;
-			Debug.Log(string.Format("Authorizing steam user. ({0})", username));
+			Debug.Log(string.Format("Authorizing steam user. : {0}", username));
 
-			if (Server.Instance.Auth.StartSession(ticketData, steamID))
+			if (Server.Auth.StartSession(ticketData, steamID))
 			{
 				// 이후의 처리는 OnAuthChange 에서
 				user.steamId = steamID;
@@ -303,7 +306,7 @@ namespace ChickenIngot.Steam
 			if (client.Status != RMPPeer.PeerStatus.Connected)
 			{
 				Debug.LogWarning("User already disconnected while authorizing.");
-				Server.Instance.Auth.EndSession(user.steamId);
+				Server.Auth.EndSession(user.steamId);
 				return;
 			}
 
@@ -331,8 +334,8 @@ namespace ChickenIngot.Steam
 				return;
 			}
 
-			Debug.Log("Closing steam session. (" + steamuser.SteamId + ")");
-			Server.Instance.Auth.EndSession(steamuser.SteamId);
+			Debug.Log(string.Format("Closing steam session. : {0}", steamuser.SteamId));
+			Server.Auth.EndSession(steamuser.SteamId);
 			Users.Remove(steamuser);
 
 			Debug.Log(string.Format("Steam user disconnected. : {0}", steamuser.Username));
@@ -381,7 +384,7 @@ namespace ChickenIngot.Steam
 			{
 				string msg = "Steam user auth canceled. (Time out)";
 				RejectUser(_waitingUser.peer, msg);
-				Server.Instance.Auth.EndSession(_waitingUser.steamId);
+				Server.Auth.EndSession(_waitingUser.steamId);
 				ResetServerAuthWaitingStatus();
 			}
 		}
@@ -407,7 +410,7 @@ namespace ChickenIngot.Steam
 				return false;
 			}
 
-			Server.Instance.Auth.OnAuthChange = OnAuthChange;
+			Server.Auth.OnAuthChange = OnAuthChange;
 			Debug.Log("Steam server initialized.");
 			return true;
 		}
@@ -416,6 +419,10 @@ namespace ChickenIngot.Steam
 		{
 			if (Server != null)
 			{
+				foreach (var user in Users)
+					Server.Auth.EndSession(user.SteamId);
+
+				Users.Clear();
 				Server.Auth.OnAuthChange = null;
 				Server.Dispose();
 				Server = null;
@@ -470,8 +477,8 @@ namespace ChickenIngot.Steam
 		private void clRPC_HandShake()
 		{
 			Debug.Log("Getting steam auth ticket.");
-			Auth.Ticket ticket = Client.Instance.Auth.GetAuthSessionTicket();
-			ulong steamId = Client.Instance.SteamId;
+			Auth.Ticket ticket = Client.Auth.GetAuthSessionTicket();
+			ulong steamId = Client.SteamId;
 			byte[] ticketData = ticket.Data;
 			byte[] steamIDData = BitConverter.GetBytes(steamId);
 			string username = Me.Username;
@@ -504,14 +511,14 @@ namespace ChickenIngot.Steam
 				return;
 			}
 
-			OnSteamServerOpen.Invoke();
+			OnStartSteamServer.Invoke();
 		}
 
 		[ServerOnly]
 		private void _OnServerClose()
 		{
 			StopSteamServer();
-			OnSteamServerClose.Invoke();
+			OnStopSteamServer.Invoke();
 		}
 
 		[ServerOnly]

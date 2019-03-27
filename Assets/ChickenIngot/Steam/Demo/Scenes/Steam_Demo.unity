@@ -426,17 +426,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54160c440d6c8f841aca8fa22cfda122, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _appId: 0
   _view: {fileID: 1291658829}
-  _onSteamUserJoin:
+  _appId: 0
+  _isServerOnly: 0
+  _onStartSteamServer:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 707077114}
-        m_MethodName: 
+      - m_Target: {fileID: 707077116}
+        m_MethodName: _OnStartSteamServer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: ChickenIngot.Steam.StartSteamServerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  _onStopSteamServer:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 707077116}
+        m_MethodName: _OnStopSteamServer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: ChickenIngot.Steam.StopSteamServerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  _onSteamUserJoin:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 707077116}
+        m_MethodName: _OnSteamUserJoin
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -447,12 +480,12 @@ MonoBehaviour:
   _onSteamUserExit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 707077114}
-        m_MethodName: 
-        m_Mode: 1
+      - m_Target: {fileID: 707077116}
+        m_MethodName: _OnSteamUserExit
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -460,47 +493,15 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: ChickenIngot.Steam.SteamUserExitEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  _onSteamServerOpen:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 707077114}
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: ChickenIngot.Steam.SteamServerOpenEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  _onSteamServerClose:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 707077114}
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: ChickenIngot.Steam.SteamServerCloseEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
   _onJoinSteamServer:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 707077114}
-        m_MethodName: 
+      - m_Target: {fileID: 707077116}
+        m_MethodName: _OnJoinSteamServer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -511,12 +512,12 @@ MonoBehaviour:
   _onExitSteamServer:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 707077114}
-        m_MethodName: 
+      - m_Target: {fileID: 707077116}
+        m_MethodName: _OnExitSteamServer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -743,15 +744,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _replicateTable: []
-  _onServerOpen:
+  _onStartServer:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: ChickenIngot.Networking.ServerOpenEvent, Assembly-CSharp, Version=0.0.0.0,
+    m_TypeName: ChickenIngot.Networking.StartServerEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  _onServerClose:
+  _onStopServer:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: ChickenIngot.Networking.ServerCloseEvent, Assembly-CSharp, Version=0.0.0.0,
+    m_TypeName: ChickenIngot.Networking.StopServerEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   _onClientConnect:
     m_PersistentCalls:

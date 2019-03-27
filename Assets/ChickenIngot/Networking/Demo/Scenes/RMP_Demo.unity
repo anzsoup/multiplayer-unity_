@@ -472,11 +472,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _replicateTable:
   - {fileID: 114294300354642996, guid: 853231ed99e49f84a91163b9a261d3eb, type: 2}
-  _onServerOpen:
+  _onStartServer:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 84291429}
-        m_MethodName: _OnServerOpen
+        m_MethodName: _OnStartServer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -486,13 +486,13 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: ChickenIngot.Networking.ServerOpenEvent, Assembly-CSharp, Version=0.0.0.0,
+    m_TypeName: ChickenIngot.Networking.StartServerEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  _onServerClose:
+  _onStopServer:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 84291429}
-        m_MethodName: _OnServerClose
+        m_MethodName: _OnStopServer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -502,7 +502,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: ChickenIngot.Networking.ServerCloseEvent, Assembly-CSharp, Version=0.0.0.0,
+    m_TypeName: ChickenIngot.Networking.StopServerEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   _onClientConnect:
     m_PersistentCalls:

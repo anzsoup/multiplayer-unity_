@@ -5,9 +5,9 @@ namespace ChickenIngot.Networking
 {
 	// Server side
 	[Serializable]
-	public class ServerOpenEvent : UnityEvent { }
+	public class StartServerEvent : UnityEvent { }
 	[Serializable]
-	public class ServerCloseEvent : UnityEvent { }
+	public class StopServerEvent : UnityEvent { }
 	[Serializable]
 	public class ClientConnectEvent : UnityEvent<RMPPeer> { }
 	[Serializable]

@@ -17,6 +17,17 @@ namespace ChickenIngot.Networking.Demo
 			_demoSpawning.enabled = false;
 		}
 
+		public void _OnStartServer()
+		{
+			Debug.LogWarning("\t** Start Server **");
+		}
+
+		public void _OnStopServer()
+		{
+			_demoSpawning.enabled = false;
+			Debug.LogWarning("\t** Stop Server **");
+		}
+
 		public void _OnClientConnect(RMPPeer client)
 		{
 			_demoSpawning.enabled = true;
@@ -27,17 +38,6 @@ namespace ChickenIngot.Networking.Demo
 		{
 			_demoSpawning.enabled = false;
 			Debug.LogWarning("\t** Client Disconnected **");
-		}
-
-		public void _OnServerOpen()
-		{
-			Debug.LogWarning("\t** Server Open **");
-		}
-
-		public void _OnServerClose()
-		{
-			_demoSpawning.enabled = false;
-			Debug.LogWarning("\t** Server Closed **");
 		}
 
 		public void _OnConnectToServer(RMPPeer server)

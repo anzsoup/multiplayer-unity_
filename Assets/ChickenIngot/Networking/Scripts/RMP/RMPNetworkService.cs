@@ -19,23 +19,23 @@ namespace ChickenIngot.Networking
 
 		#region Events
 
-		[Header("Server Side")]
+		[Header("Server Side Events")]
 		[SerializeField]
-		private ServerOpenEvent _onServerOpen;
+		private StartServerEvent _onStartServer;
 		[SerializeField]
-		private ServerCloseEvent _onServerClose;
+		private StopServerEvent _onStopServer;
 		[SerializeField]
 		private ClientConnectEvent _onClientConnect;
 		[SerializeField]
 		private ClientDisconnectEvent _onClientDisconnect;
-		[Header("Client Side")]
+		[Header("Client Side Events")]
 		[SerializeField]
 		private ConnectToServerEvent _onConnectToServer;
 		[SerializeField]
 		private DisconnectFromServerEvent _onDisconnectFromServer;
 
-		public static ServerOpenEvent OnServerOpen { get { return _instance._onServerOpen; } }
-		public static ServerCloseEvent OnServerClose { get { return _instance._onServerClose; } }
+		public static StartServerEvent OnStartServer { get { return _instance._onStartServer; } }
+		public static StopServerEvent OnStopServer { get { return _instance._onStopServer; } }
 		public static ClientConnectEvent OnClientConnect { get { return _instance._onClientConnect; } }
 		public static ClientDisconnectEvent OnClientDisconnect { get { return _instance._onClientDisconnect; } }
 		public static ConnectToServerEvent OnConnectToServer { get { return _instance._onConnectToServer; } }
@@ -93,13 +93,13 @@ namespace ChickenIngot.Networking
 		public static void StartServer(int localPort = 0, int maxConnection = 1)
 		{
 			NetworkService.StartServer<RMPPeerClient>(localPort, maxConnection);
-			OnServerOpen.Invoke();
+			OnStartServer.Invoke();
 		}
 
 		public static void StopServer()
 		{
 			NetworkService.StopServer();
-			OnServerClose.Invoke();
+			OnStopServer.Invoke();
 		}
 
 		public static void StartClient(string remoteHost, int remotePort)
