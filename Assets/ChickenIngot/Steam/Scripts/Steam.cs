@@ -4,16 +4,16 @@ using Facepunch.Steamworks;
 using ChickenIngot.Networking;
 using System.Collections.Generic;
 using System.Collections;
-using System.Linq;
 using UnityEditor;
 
 namespace ChickenIngot.Steam
 {
 	/// <summary>
 	/// 자동으로 스팀 클라이언트를 초기화하고 스팀서버를 관리해 준다.
-	/// RMP Network Service 가 존재할 경우에만 스팀서버가 활성화 된다.
+	/// RMP Network Service 객체가 존재하면 서버를 열때 스팀서버가 활성화 된다.
 	/// GameObject- Steam 메뉴를 선택하여 게임오브젝트를 씬에 추가할 수 있다.
 	/// </summary>
+	[RequireComponent(typeof(RMPNetworkView))]
 	public class Steam : MonoBehaviour
 	{
 		private enum ConnectionOperationType
@@ -117,7 +117,7 @@ namespace ChickenIngot.Steam
 				return;
 			}
 
-			var go = new GameObject("Steam", typeof(RMPNetworkView), typeof(Steam));
+			var go = new GameObject("Steam", typeof(Steam));
 			var steam = go.GetComponent<Steam>();
 			var view = go.GetComponent<RMPNetworkView>();
 			steam._view = view;
