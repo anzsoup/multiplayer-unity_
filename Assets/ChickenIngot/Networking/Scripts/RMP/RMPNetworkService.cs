@@ -6,6 +6,7 @@ namespace ChickenIngot.Networking
 {
 	/// <summary>
 	/// RMP 통신을 위해서는 이 스크립트가 붙은 게임오브젝트가 존재해야 한다.
+	/// GameObject - RMP Network Service 메뉴를 선택하여 게임오브젝트를 씬에 추가할 수 있다.
 	/// </summary>
 	public class RMPNetworkService : MonoBehaviour
 	{

@@ -5,6 +5,9 @@ public class SteamConfig
 {
 	public string ModDir { get; set; }
 
+	/// <summary>
+	/// 스팀서버정보의 게임 이름에 표시되는 정보.
+	/// </summary>
 	public string GameDescription { get; set; }
 
 	/// <summary>
@@ -23,6 +26,10 @@ public class SteamConfig
 	/// </summary>
 	public string Name { get; set; }
 
+	/// <summary>
+	/// 스팀서버의 최대인원.
+	/// 최대인원을 초과할 경우 스팀티켓을 받아올 수 없다.
+	/// </summary>
 	public int MaxPlayers { get; set; }
 
 	public SteamConfig()

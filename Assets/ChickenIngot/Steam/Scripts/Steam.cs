@@ -9,6 +9,11 @@ using UnityEditor;
 
 namespace ChickenIngot.Steam
 {
+	/// <summary>
+	/// 자동으로 스팀 클라이언트를 초기화하고 스팀서버를 관리해 준다.
+	/// RMP Network Service 가 존재할 경우에만 스팀서버가 활성화 된다.
+	/// GameObject- Steam 메뉴를 선택하여 게임오브젝트를 씬에 추가할 수 있다.
+	/// </summary>
 	public class Steam : MonoBehaviour
 	{
 		private enum ConnectionOperationType
@@ -30,19 +35,48 @@ namespace ChickenIngot.Steam
 
 		[SerializeField]
 		private RMPNetworkView _view;
+		[Tooltip("스팀에 게임을 등록한 후 발급받은 Id를 입력한다. 없으면 그대로 둔다.")]
 		[SerializeField]
 		private uint _appId;
+		[Tooltip("체크하면 스팀 클라이언트 초기화를 하지 않는다. 서버 빌드 시 사용한다.")]
 		[SerializeField]
 		private bool _isServerOnly;
 		private readonly Queue<ConnectionOperation> _operationQueue = new Queue<ConnectionOperation>();
 		private ConnectionOperation _waitingUser;
 
+		/// <summary>
+		/// Steam 클래스에 접근할 땐 이 값이 true 인지 반드시 확인해야 한다.
+		/// </summary>
 		public static bool IsInitialized { get; private set; }
+
+		/// <summary>
+		/// 게임의 스팀 App Id.
+		/// </summary>
 		public static uint AppId { get; private set; }
+
+		/// <summary>
+		/// 나의 SteamUser 객체
+		/// </summary>
 		public static SteamUser Me { get; private set; }
+
+		/// <summary>
+		/// 서버에 접속한 스팀유저들. 내가 서버일 경우에만 유효하다.
+		/// </summary>
 		public static List<SteamUser> Users { get; private set; }
+
+		/// <summary>
+		/// 게임 정보 및 스팀서버 설정.
+		/// </summary>
 		public static SteamConfig Config { get; set; }
+
+		/// <summary>
+		/// Facepunch.Steamworks.Client 객체
+		/// </summary>
 		public static Client Client { get; private set; }
+
+		/// <summary>
+		/// Facepunch.Steamworks.Server 객체
+		/// </summary>
 		public static Server Server { get; private set; }
 
 		#region Events
