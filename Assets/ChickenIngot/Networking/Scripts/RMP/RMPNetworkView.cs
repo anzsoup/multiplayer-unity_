@@ -35,7 +35,6 @@ namespace ChickenIngot.Networking
 		private MessageCache _messageCache;
 		
 		public string Guid { get { return _guid; } set { _guid = value; } }
-		public MonoBehaviour[] MessageReceivers { get { return _messageReceivers; } }
 
 		/// <summary>
 		/// RMPNetworkService 에 의해 부여된다.
