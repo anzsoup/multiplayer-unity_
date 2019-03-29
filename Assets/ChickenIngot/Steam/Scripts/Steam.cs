@@ -76,6 +76,13 @@ namespace ChickenIngot.Steam
 		[MenuItem("GameObject/Steam", priority = 30)]
 		static void CreateGameObject()
 		{
+			var find = FindObjectOfType<Steam>();
+			if (find != null)
+			{
+				Debug.LogError("Steam Object already exists.");
+				return;
+			}
+
 			var go = new GameObject("Steam", typeof(RMPNetworkView), typeof(Steam));
 			var steam = go.GetComponent<Steam>();
 			var view = go.GetComponent<RMPNetworkView>();
@@ -86,9 +93,10 @@ namespace ChickenIngot.Steam
 
 		public static void SetServerOnlyOption(bool value)
 		{
-			if (IsInitialized)
+			var find = FindObjectOfType<Steam>();
+			if (find != null)
 			{
-				_instance._isServerOnly = value;
+				find._isServerOnly = value;
 			}
 		}
 #endif
@@ -104,7 +112,7 @@ namespace ChickenIngot.Steam
 			}
 			else
 			{
-				Debug.LogWarning("Steam Unity Service instance already exsists.");
+				Debug.LogWarning("Steam instance already exists.");
 				Destroy(this);
 				return;
 			}

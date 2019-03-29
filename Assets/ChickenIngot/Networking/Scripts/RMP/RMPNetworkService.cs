@@ -47,6 +47,13 @@ namespace ChickenIngot.Networking
 		[MenuItem("GameObject/RMP Network Service", priority = 30)]
 		static void CreateGameObject()
 		{
+			var find = FindObjectOfType<RMPNetworkService>();
+			if (find != null)
+			{
+				Debug.LogError("RMP Network Service Object already exists.");
+				return;
+			}
+
 			var go = new GameObject("RMP Network Service", typeof(RMPNetworkService));
 			Undo.RegisterCreatedObjectUndo(go, "Create RMP Network Service");
 		}
@@ -61,7 +68,7 @@ namespace ChickenIngot.Networking
 			}
 			else
 			{
-				Debug.LogWarning("RMP Unity Service instance already exsists.");
+				Debug.LogWarning("RMP Network Service instance already exists.");
 				Destroy(this);
 				return;
 			}	
