@@ -39,141 +39,174 @@ namespace ChickenIngot.Networking
 		{
 			Position += size;
 			if (Position >= BUFFER_LENGTH)
-				UnityEngine.Debug.LogWarning("[Packet] Position overflow. It will cause ArrayOutOfRangeException.");
+				Debug.LogWarning("[Packet] Position overflow. It will cause ArrayOutOfRangeException.");
 		}
 
 		#region Push
 
-		public void PushByte(byte data)
+		public void Push(Byte data)
 		{
 			Buffer[Position] = data;
-			MovePosition(sizeof(byte));
+			MovePosition(sizeof(Byte));
 		}
 
-		public void PushBool(bool data)
+		public void Push(SByte data)
+		{
+			Push((Byte)data);
+		}
+
+		public void Push(Boolean data)
 		{
 			if (data)
-				PushByte(1);
+				Push((Byte)1);
 			else
-				PushByte(0);
+				Push((Byte)0);
 		}
 
-		public void PushInt16(Int16 data)
+		public void Push(Int16 data)
 		{
-			byte[] tempBuffer = BitConverter.GetBytes(data);
+			var tempBuffer = BitConverter.GetBytes(data);
 			tempBuffer.CopyTo(Buffer, Position);
 			MovePosition(tempBuffer.Length);
 		}
 
-		public void PushInt32(Int32 data)
+		public void Push(UInt16 data)
 		{
-			byte[] tempBuffer = BitConverter.GetBytes(data);
+			Push((Int16)data);
+		}
+
+		public void Push(Int32 data)
+		{
+			var tempBuffer = BitConverter.GetBytes(data);
 			tempBuffer.CopyTo(Buffer, Position);
 			MovePosition(tempBuffer.Length);
 		}
 
-		public void PushInt64(Int64 data)
+		public void Push(UInt32 data)
 		{
-			byte[] tempBuffer = BitConverter.GetBytes(data);
+			Push((Int32)data);
+		}
+
+		public void Push(Int64 data)
+		{
+			var tempBuffer = BitConverter.GetBytes(data);
 			tempBuffer.CopyTo(Buffer, Position);
 			MovePosition(tempBuffer.Length);
 		}
 
-		public void PushSingle(float data)
+		public void Push(UInt64 data)
 		{
-			byte[] tempBuffer = BitConverter.GetBytes(data);
+			Push((Int64)data);
+		}
+
+		public void Push(Single data)
+		{
+			var tempBuffer = BitConverter.GetBytes(data);
 			tempBuffer.CopyTo(Buffer, Position);
 			MovePosition(tempBuffer.Length);
 		}
 
-		public void PushDouble(double data)
+		public void Push(Double data)
 		{
-			byte[] tempBuffer = BitConverter.GetBytes(data);
+			var tempBuffer = BitConverter.GetBytes(data);
 			tempBuffer.CopyTo(Buffer, Position);
 			MovePosition(tempBuffer.Length);
 		}
 
-		public void PushByteArray(byte[] data)
+		public void Push(Char data)
 		{
-			int len = data.Length;
-			PushInt32(len);
+			var tempBuffer = BitConverter.GetBytes(data);
+			tempBuffer.CopyTo(Buffer, Position);
+			MovePosition(tempBuffer.Length);
+		}
+
+		public void Push(Byte[] data)
+		{
+			var len = data.Length;
+			Push(len);
 			data.CopyTo(Buffer, Position);
 			MovePosition(data.Length);
 		}
 
-		public void PushString(string data)
+		public void Push(String data)
 		{
 			if (data == null) data = "";
-			byte[] tempBuffer = System.Text.Encoding.UTF8.GetBytes(data);
-			PushByteArray(tempBuffer);
+			var tempBuffer = System.Text.Encoding.UTF8.GetBytes(data);
+			Push(tempBuffer);
 		}
 
-		public void PushTransform(Transform transform)
+		public void Push(Transform transform)
 		{
 			/// scale은 hierarcy와 밀접하기 때문에
 			/// hierarcy 관계까지 완벽하게 주고받을 게 아니라면 scale은 제외한다.
 
-			Vector3 position = transform.position;
-			Quaternion rotation = transform.rotation;
-			PushVector3(position);
-			PushQuaternion(rotation);
+			var position = transform.position;
+			var rotation = transform.rotation;
+			Push(position);
+			Push(rotation);
 		}
 
-		public void PushVector2(Vector2 v)
+		public void Push(Vector2 v)
 		{
-			PushSingle(v.x);
-			PushSingle(v.y);
+			Push(v.x);
+			Push(v.y);
 		}
 
-		public void PushVector3(Vector3 v)
+		public void Push(Vector3 v)
 		{
-			PushSingle(v.x);
-			PushSingle(v.y);
-			PushSingle(v.z);
+			Push(v.x);
+			Push(v.y);
+			Push(v.z);
 		}
 
-		public void PushQuaternion(Quaternion q)
+		public void Push(Quaternion q)
 		{
-			PushSingle(q.x);
-			PushSingle(q.y);
-			PushSingle(q.z);
-			PushSingle(q.w);
+			Push(q.x);
+			Push(q.y);
+			Push(q.z);
+			Push(q.w);
 		}
 
-		public void PushVector2Int(Vector2Int v)
+		public void Push(Vector2Int v)
 		{
-			PushInt32(v.x);
-			PushInt32(v.y);
+			Push(v.x);
+			Push(v.y);
 		}
 
-		public void PushVector3Int(Vector3Int v)
+		public void Push(Vector3Int v)
 		{
-			PushInt32(v.x);
-			PushInt32(v.y);
-			PushInt32(v.z);
+			Push(v.x);
+			Push(v.y);
+			Push(v.z);
 		}
 
 		#endregion
 
 		#region Pop
 
-		public byte PopByte()
+		public Byte PopByte()
 		{
 			var data = Buffer[Position];
-			MovePosition(sizeof(byte));
+			MovePosition(sizeof(Byte));
 			return data;
 		}
 
-		public bool PopBool()
+		public SByte PopSByte()
 		{
-			var data = PopByte();
-			return data == 1;
+			var data = (SByte)PopByte();
+			return data;
 		}
 
 		public Int16 PopInt16()
 		{
 			var data = BitConverter.ToInt16(Buffer, Position);
 			MovePosition(sizeof(Int16));
+			return data;
+		}
+
+		public UInt16 PopUInt16()
+		{
+			var data = (UInt16)PopInt16();
 			return data;
 		}
 
@@ -184,6 +217,12 @@ namespace ChickenIngot.Networking
 			return data;
 		}
 
+		public UInt32 PopUInt32()
+		{
+			var data = (UInt32)PopInt32();
+			return data;
+		}
+
 		public Int64 PopInt64()
 		{
 			var data = BitConverter.ToInt64(Buffer, Position);
@@ -191,41 +230,60 @@ namespace ChickenIngot.Networking
 			return data;
 		}
 
-		public float PopSingle()
+		public UInt64 PopUInt64()
+		{
+			var data = (UInt64)PopInt64();
+			return data;
+		}
+
+		public Single PopSingle()
 		{
 			var data = BitConverter.ToSingle(Buffer, Position);
-			MovePosition(sizeof(float));
+			MovePosition(sizeof(Single));
 			return data;
 		}
 
-		public double PopDouble()
+		public Double PopDouble()
 		{
 			var data = BitConverter.ToDouble(Buffer, Position);
-			MovePosition(sizeof(double));
+			MovePosition(sizeof(Double));
 			return data;
 		}
 
-		public byte[] PopByteArray()
+		public Char PopChar()
 		{
-			int len = PopInt32();
-			byte[] data = new byte[len];
-			Array.Copy(Buffer, Position, data, 0, len);
+			var data = BitConverter.ToChar(Buffer, Position);
+			MovePosition(sizeof(Char));
+			return data;
+		}
+
+		public Boolean PopBoolean()
+		{
+			var data = PopByte();
+			return data == 1;
+		}
+
+		public String PopString()
+		{
+			var len = PopInt32();
+			var data = System.Text.Encoding.UTF8.GetString(Buffer, Position, len);
 			MovePosition(len);
 			return data;
 		}
 
-		public string PopString()
+		public Byte[] PopByteArray()
 		{
-			int len = PopInt32();
-			var data = System.Text.Encoding.UTF8.GetString(Buffer, Position, len);
+			var len = PopInt32();
+			var data = new Byte[len];
+			Array.Copy(Buffer, Position, data, 0, len);
 			MovePosition(len);
 			return data;
 		}
 
 		public void PopTransform(Transform transform)
 		{
-			Vector3 position = PopVector3();
-			Quaternion rotation = PopQuaternion();
+			var position = PopVector3();
+			var rotation = PopQuaternion();
 			transform.position = position;
 			transform.rotation = rotation;
 		}

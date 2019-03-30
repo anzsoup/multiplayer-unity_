@@ -42,7 +42,7 @@ namespace ChickenIngot.Networking.Demo
 		void OnReplicate(Packet msg)
 		{
 			if (NetworkService.IsServer)
-				msg.PushTransform(transform);
+				msg.Push(transform);
 			else
 				msg.PopTransform(transform);
 

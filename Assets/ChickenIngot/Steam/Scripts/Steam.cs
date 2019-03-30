@@ -26,9 +26,8 @@ namespace ChickenIngot.Steam
 			public RMPPeer peer;
 			public string version;
 			public byte[] steamTicketData;
-			public byte[] steamIdData;
-			public string username;
 			public ulong steamId;
+			public string username;
 		}
 
 		private static Steam _instance = null;
@@ -278,14 +277,14 @@ namespace ChickenIngot.Steam
 
 			// 스팀인증
 			var ticketData = user.steamTicketData;
-			var steamID = BitConverter.ToUInt64(user.steamIdData, 0);
+			var steamId = user.steamId;
 			var username = user.username;
 			Debug.Log(string.Format("Authorizing steam user. : {0}", username));
 
-			if (Server.Auth.StartSession(ticketData, steamID))
+			if (Server.Auth.StartSession(ticketData, steamId))
 			{
 				// 이후의 처리는 OnAuthChange 에서
-				user.steamId = steamID;
+				user.steamId = steamId;
 				SetServerAuthWaitingStatus(user);
 			}
 			else
@@ -522,15 +521,14 @@ namespace ChickenIngot.Steam
 			Auth.Ticket ticket = Client.Auth.GetAuthSessionTicket();
 			ulong steamId = Client.SteamId;
 			byte[] ticketData = ticket.Data;
-			byte[] steamIDData = BitConverter.GetBytes(steamId);
 			string username = Me.Username;
 			// 버전, 스팀티켓, 스팀id 전송
-			_view.RPC(RPCOption.ToServer, "svRPC_HandShake", Config.Version, ticketData, steamIDData, username);
+			_view.RPC(RPCOption.ToServer, "svRPC_HandShake", Config.Version, ticketData, steamId, username);
 		}
 
 		[RMP]
 		[ServerOnly]
-		private void svRPC_HandShake(string version, byte[] steamTicketData, byte[] steamIDData, string username)
+		private void svRPC_HandShake(string version, byte[] steamTicketData, ulong steamId, string username)
 		{
 			Debug.Log(string.Format("Steam auth ticket received. : {0}", username));
 			ConnectionOperation req = new ConnectionOperation();
@@ -538,7 +536,7 @@ namespace ChickenIngot.Steam
 			req.peer = _view.MessageSender;
 			req.version = version;
 			req.steamTicketData = steamTicketData;
-			req.steamIdData = steamIDData;
+			req.steamId = steamId;
 			req.username = username;
 			_operationQueue.Enqueue(req);
 		}

@@ -127,10 +127,10 @@ namespace ChickenIngot.Networking
 			}
 
 			var msg = new Packet();
-			msg.PushByte((byte)RMPEncoding.ProtocolId.RPC);
-			msg.PushString(sender.Guid);
-			msg.PushString(methodName);
-			msg.PushInt32(parameters.Length);
+			msg.Push((byte)RMPEncoding.ProtocolId.RPC);
+			msg.Push(sender.Guid);
+			msg.Push(methodName);
+			msg.Push(parameters.Length);
 
 			foreach (object param in parameters)
 				RMPEncoding.PushParameter(msg, param);
@@ -142,9 +142,9 @@ namespace ChickenIngot.Networking
 		public void SendReplicate(RMPNetworkView view)
 		{
 			var msg = new Packet();
-			msg.PushByte((byte)RMPEncoding.ProtocolId.Replicate);
-			msg.PushInt32(view.ReplicationTableIndex);
-			msg.PushString(view.Guid);
+			msg.Push((byte)RMPEncoding.ProtocolId.Replicate);
+			msg.Push(view.ReplicationTableIndex);
+			msg.Push(view.Guid);
 
 			// 서버는 클라에 함께 보낼 데이터를 넣는다.
 			view.SendReflectionMessage(null, "OnReplicate", msg);
@@ -156,8 +156,8 @@ namespace ChickenIngot.Networking
 		public void SendRemove(RMPNetworkView view)
 		{
 			var msg = new Packet();
-			msg.PushByte((byte)RMPEncoding.ProtocolId.Remove);
-			msg.PushString(view.Guid);
+			msg.Push((byte)RMPEncoding.ProtocolId.Remove);
+			msg.Push(view.Guid);
 			NetworkService.Send(HostId, ConnectionId, msg);
 		}
 	}

@@ -29,10 +29,20 @@ namespace ChickenIngot.Networking
 		public enum ParameterType : byte
 		{
 			None,
-			Bool,
-			Int,
-			Float,
+			Byte,
+			SByte,
+			Int16,
+			UInt16,
+			Int32,
+			UInt32,
+			Int64,
+			UInt64,
+			Single,
+			Double,
+			Char,
+			Boolean,
 			String,
+			DateTime,
 			ByteArray,
 			Vector2,
 			Vector3,
@@ -75,57 +85,102 @@ namespace ChickenIngot.Networking
 
 		public static void PushParameter(Packet msg, object parameter)
 		{
-			if (parameter == null) msg.PushByte((byte)ParameterType.None);
-			else if (parameter is int)
+			if (parameter == null) msg.Push((Byte)ParameterType.None);
+			else if (parameter is Byte)
 			{
-				msg.PushByte((byte)ParameterType.Int);
-				msg.PushInt32((int)parameter);
+				msg.Push((Byte)ParameterType.Byte);
+				msg.Push((Byte)parameter);
 			}
-			else if (parameter is float)
+			else if (parameter is SByte)
 			{
-				msg.PushByte((byte)ParameterType.Float);
-				msg.PushSingle((float)parameter);
+				msg.Push((Byte)ParameterType.SByte);
+				msg.Push((SByte)parameter);
 			}
-			else if (parameter is bool)
+			else if (parameter is Int16)
 			{
-				msg.PushByte((byte)ParameterType.Bool);
-				msg.PushBool((bool)parameter);
+				msg.Push((Byte)ParameterType.Int16);
+				msg.Push((Int16)parameter);
 			}
-			else if (parameter is string)
+			else if (parameter is UInt16)
 			{
-				msg.PushByte((byte)ParameterType.String);
-				msg.PushString((string)parameter);
+				msg.Push((Byte)ParameterType.UInt16);
+				msg.Push((UInt16)parameter);
 			}
-			else if (parameter is byte[])
+			else if (parameter is Int32)
 			{
-				msg.PushByte((byte)ParameterType.ByteArray);
-				byte[] param = (byte[])parameter;
-				msg.PushByteArray(param);
+				msg.Push((Byte)ParameterType.Int32);
+				msg.Push((Int32)parameter);
+			}
+			else if (parameter is UInt32)
+			{
+				msg.Push((Byte)ParameterType.UInt32);
+				msg.Push((UInt32)parameter);
+			}
+			else if (parameter is Int64)
+			{
+				msg.Push((Byte)ParameterType.Int64);
+				msg.Push((Int64)parameter);
+			}
+			else if (parameter is UInt64)
+			{
+				msg.Push((Byte)ParameterType.UInt64);
+				msg.Push((UInt64)parameter);
+			}
+			else if (parameter is Single)
+			{
+				msg.Push((Byte)ParameterType.Single);
+				msg.Push((Single)parameter);
+			}
+			else if (parameter is Double)
+			{
+				msg.Push((Byte)ParameterType.Double);
+				msg.Push((Double)parameter);
+			}
+			else if (parameter is Char)
+			{
+				msg.Push((Byte)ParameterType.Char);
+				msg.Push((Char)parameter);
+			}
+			else if (parameter is Boolean)
+			{
+				msg.Push((Byte)ParameterType.Boolean);
+				msg.Push((Boolean)parameter);
+			}
+			else if (parameter is String)
+			{
+				msg.Push((Byte)ParameterType.String);
+				msg.Push((String)parameter);
+			}
+			else if (parameter is Byte[])
+			{
+				msg.Push((Byte)ParameterType.ByteArray);
+				Byte[] param = (Byte[])parameter;
+				msg.Push(param);
 			}
 			else if (parameter is Vector2)
 			{
-				msg.PushByte((byte)ParameterType.Vector2);
-				msg.PushVector2((Vector2)parameter);
+				msg.Push((Byte)ParameterType.Vector2);
+				msg.Push((Vector2)parameter);
 			}
 			else if (parameter is Vector3)
 			{
-				msg.PushByte((byte)ParameterType.Vector3);
-				msg.PushVector3((Vector3)parameter);
+				msg.Push((Byte)ParameterType.Vector3);
+				msg.Push((Vector3)parameter);
 			}
 			else if (parameter is Quaternion)
 			{
-				msg.PushByte((byte)ParameterType.Quaternion);
-				msg.PushQuaternion((Quaternion)parameter);
+				msg.Push((Byte)ParameterType.Quaternion);
+				msg.Push((Quaternion)parameter);
 			}
 			else if (parameter is Vector2Int)
 			{
-				msg.PushByte((byte)ParameterType.Vector2Int);
-				msg.PushVector2Int((Vector2Int)parameter);
+				msg.Push((Byte)ParameterType.Vector2Int);
+				msg.Push((Vector2Int)parameter);
 			}
 			else if (parameter is Vector3Int)
 			{
-				msg.PushByte((byte)ParameterType.Vector3Int);
-				msg.PushVector3Int((Vector3Int)parameter);
+				msg.Push((Byte)ParameterType.Vector3Int);
+				msg.Push((Vector3Int)parameter);
 			}
 		}
 
@@ -140,16 +195,52 @@ namespace ChickenIngot.Networking
 					parameter = null;
 					break;
 
-				case ParameterType.Int:
+				case ParameterType.Byte:
+					parameter = msg.PopByte();
+					break;
+
+				case ParameterType.SByte:
+					parameter = msg.PopSByte();
+					break;
+
+				case ParameterType.Int16:
+					parameter = msg.PopInt16();
+					break;
+
+				case ParameterType.UInt16:
+					parameter = msg.PopUInt16();
+					break;
+
+				case ParameterType.Int32:
 					parameter = msg.PopInt32();
 					break;
 
-				case ParameterType.Float:
+				case ParameterType.UInt32:
+					parameter = msg.PopUInt32();
+					break;
+
+				case ParameterType.Int64:
+					parameter = msg.PopInt64();
+					break;
+
+				case ParameterType.UInt64:
+					parameter = msg.PopUInt64();
+					break;
+
+				case ParameterType.Single:
 					parameter = msg.PopSingle();
 					break;
 
-				case ParameterType.Bool:
-					parameter = msg.PopBool();
+				case ParameterType.Double:
+					parameter = msg.PopDouble();
+					break;
+
+				case ParameterType.Char:
+					parameter = msg.PopChar();
+					break;
+
+				case ParameterType.Boolean:
+					parameter = msg.PopBoolean();
 					break;
 
 				case ParameterType.String:
