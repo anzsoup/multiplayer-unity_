@@ -10,11 +10,11 @@ namespace ChickenIngot.Networking.Demo
 	public class Demo : MonoBehaviour
 	{
 		[SerializeField]
-		private DemoReplicate _demoSpawning;
+		private DemoReplicate _demoReplicate;
 
 		void Awake()
 		{
-			_demoSpawning.enabled = false;
+			_demoReplicate.enabled = false;
 		}
 
 		public void _OnStartServer()
@@ -24,31 +24,31 @@ namespace ChickenIngot.Networking.Demo
 
 		public void _OnStopServer()
 		{
-			_demoSpawning.enabled = false;
+			_demoReplicate.enabled = false;
 			Debug.LogWarning("\t** Stop Server **");
 		}
 
 		public void _OnClientConnect(RMPPeer client)
 		{
-			_demoSpawning.enabled = true;
+			_demoReplicate.enabled = true;
 			Debug.LogWarning("\t** Client Connected **");
 		}
 
 		public void _OnClientDisconnect(RMPPeer client)
 		{
-			_demoSpawning.enabled = false;
+			_demoReplicate.enabled = false;
 			Debug.LogWarning("\t** Client Disconnected **");
 		}
 
 		public void _OnConnectToServer(RMPPeer server)
 		{
-			_demoSpawning.enabled = true;
+			_demoReplicate.enabled = true;
 			Debug.LogWarning("\t** Connected **");
 		}
 
 		public void _OnDisconnectFromServer(RMPPeer server)
 		{
-			_demoSpawning.enabled = false;
+			_demoReplicate.enabled = false;
 			Debug.LogWarning("\t** Disconnected **");
 		}
 	}

@@ -123,15 +123,6 @@ namespace ChickenIngot.Steam
 			view.AddMessageReceiver(steam);
 			Undo.RegisterCreatedObjectUndo(go, "Create Steam");
 		}
-
-		public static void SetServerOnlyOption(bool value)
-		{
-			var find = FindObjectOfType<Steam>();
-			if (find != null)
-			{
-				find._isServerOnly = value;
-			}
-		}
 #endif
 
 		void Awake()

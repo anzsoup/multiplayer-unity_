@@ -6,23 +6,23 @@ using UnityEngine;
 
 namespace ChickenIngot.Steam.Editor
 {
-	public class SteamBuild
+	[InitializeOnLoad]
+	public static class SteamBuild
 	{
 
 		private static bool _prefsLoaded;
 		private static bool _copyDlls;
 		private static bool _copyServerDlls;
 
+		static SteamBuild()
+		{
+			_copyDlls = EditorPrefs.GetBool("multiplayer-unity.Steam.CopyDlls", true);
+			_copyServerDlls = EditorPrefs.GetBool("multiplayer-unity.Steam.CopyServerDlls", true);
+		}
+
 		[PreferenceItem("Steam")]
 		static void PreferencesGUI()
 		{
-			if (!_prefsLoaded)
-			{
-				_copyDlls = EditorPrefs.GetBool("multiplayer-unity.Steam.CopyDlls", true);
-				_copyServerDlls = EditorPrefs.GetBool("multiplayer-unity.Steam.CopyServerDlls", true);
-				_prefsLoaded = true;
-			}
-
 			_copyDlls = EditorGUILayout.Toggle("Copy Dlls on Build", _copyDlls);
 			if (_copyDlls) _copyServerDlls = EditorGUILayout.Toggle("Copy Server Dlls on Build", _copyServerDlls);
 
