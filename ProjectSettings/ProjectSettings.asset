@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
+  companyName: Chicken Ingot
   productName: multiplayer-unity
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -571,7 +571,7 @@ PlayerSettings:
   webGLCompressionFormat: 1
   webGLLinkerTarget: 1
   scriptingDefineSymbols:
-    1: CLIENT_APP
+    1: ss
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration: {}
