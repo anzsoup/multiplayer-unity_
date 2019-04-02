@@ -79,10 +79,10 @@ namespace ChickenIngot.Build
 				{
 					GUILayout.BeginHorizontal();
 
-					if (GUILayout.Button("Set Symbol"))
-						build.SetSymbol();
-					if (GUILayout.Button("Reset Symbol"))
-						build.ResetSymbol();
+					if (GUILayout.Button("Set Symbols"))
+						build.SetSymbols();
+					if (GUILayout.Button("Reset Symbols"))
+						build.ResetSymbols();
 
 					GUILayout.EndHorizontal();
 				}
@@ -118,16 +118,16 @@ namespace ChickenIngot.Build
 				}
 
 				if (_autoSetSymbols)
-					SetSymbol();
+					SetSymbols();
 			}
 		}
 
-		private void SetSymbol()
+		private void SetSymbols()
 		{
-			Symbol.Add(_symbols.Split(';'));
+			Symbol.Set(_symbols.Split(';'));
 		}
 
-		private void ResetSymbol()
+		private void ResetSymbols()
 		{
 			Symbol.Remove(_symbols.Split(';'));
 		}
