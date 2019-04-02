@@ -27,6 +27,8 @@ namespace ChickenIngot.Build
 		{
 			if (Application.isPlaying)
 			{
+				DontDestroyOnLoad(gameObject);
+
 				CompanyName = _companyName;
 				ProductName = _productName;
 				BinaryName = _binaryName;
