@@ -18,3 +18,8 @@ Steam 기능들은 Facepunch.Steamworks를 직접 이용하면 됩니다.
 하나의 프로젝트로 여러 빌드버전을 관리할 수 있습니다.  
 Scene에 Build Manager 오브젝트를 생성하여 Scene 단위로 빌드 설정을 관리하고 빌드합니다.  
 Build Manager가 속한 Scene이 초기씬이 됩니다.  
+
+## References
+- [Facepunch.Steamworks](https://github.com/Facepunch/Facepunch.Steamworks)
+## License
+MIT
