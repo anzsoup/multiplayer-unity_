@@ -45,7 +45,7 @@ namespace ChickenIngot.Console
 
 		[SerializeField] Color BackgroundColor    = new Color(0f, 0f, 0f, 0.8f);
 		[SerializeField] Color ForegroundColor    = Color.white;
-		[SerializeField] Color ShellColor         = Color.green;
+		[SerializeField] Color ShellColor         = new Color(0.8f, 0.8f, 0.8f, 1f);
 		[SerializeField] Color InputColor         = Color.cyan;
 		[SerializeField] Color WarningColor       = Color.yellow;
 		[SerializeField] Color ErrorColor         = Color.red;
