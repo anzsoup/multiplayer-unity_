@@ -179,7 +179,7 @@ namespace ChickenIngot.Console
 			Shell = new CommandShell();
 			History = new CommandHistory();
 			Autocomplete = new CommandAutoComplete();
-
+			
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
 			if (Application.isBatchMode)
 			{
@@ -201,6 +201,7 @@ namespace ChickenIngot.Console
 		void OnDisable()
 		{
 			Application.logMessageReceived -= HandleUnityLog;
+			Buffer.LogMessageReceived -= HandleLogBatchmode;
 		}
 
 		void Start()
@@ -208,10 +209,7 @@ namespace ChickenIngot.Console
 			DontDestroyOnLoad(gameObject);
 
 			if (ConsoleFont == null)
-			{
 				ConsoleFont = Font.CreateDynamicFontFromOSFont("Consolas", 16);
-				Debug.LogWarning("Command Console Warning: Please assign a font.");
-			}
 
 			command_text = "";
 			cached_command_text = command_text;
