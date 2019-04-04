@@ -58,7 +58,7 @@ namespace ChickenIngot.Build
 			"Facepuch.Steamworks 의 문제점으로 인해 32비트 환경에서는 동작하지 않는 점 유의.")]
 		private BuildTarget _buildTarget = BuildTarget.StandaloneWindows64;
 
-		[SerializeField]
+		[SerializeField] [EnumFlag]
 		private BuildOptions _buildOptions = BuildOptions.None;
 
 		[SerializeField]
