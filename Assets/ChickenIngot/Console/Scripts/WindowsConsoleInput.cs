@@ -5,14 +5,16 @@ namespace ChickenIngot.Console
 	public class WindowsConsoleInput
 	{
 		ConsoleColor inputColor;
+		string inputCaret;
 
 		//public delegate void InputText( string strInput );
 		public event Action<string> OnInputText;
 		public string inputString;
 
-		public WindowsConsoleInput(ConsoleColor inputColor)
+		public WindowsConsoleInput(ConsoleColor inputColor, string inputCaret)
 		{
 			this.inputColor = inputColor;
+			this.inputCaret = string.IsNullOrEmpty(inputCaret) ? ">" : inputCaret;
 		}
 
 		public void ClearLine()
@@ -52,7 +54,7 @@ namespace ChickenIngot.Console
 
 			ClearLine();
 			System.Console.ForegroundColor = inputColor;
-			System.Console.WriteLine("> " + inputString);
+			System.Console.WriteLine(string.Format("{0} {1}", inputCaret, inputString));
 
 			var strtext = inputString;
 			inputString = "";

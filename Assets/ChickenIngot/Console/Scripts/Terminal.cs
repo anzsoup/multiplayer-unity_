@@ -184,7 +184,7 @@ namespace ChickenIngot.Console
 			if (Application.isBatchMode)
 			{
 				windows_console = new WindowsConsole();
-				windows_input = new WindowsConsoleInput((System.ConsoleColor)InputConsoleColor);
+				windows_input = new WindowsConsoleInput((System.ConsoleColor)InputConsoleColor, InputCaret);
 
 				windows_console.Initialize();
 				windows_console.SetTitle("Rust Server");
@@ -209,7 +209,7 @@ namespace ChickenIngot.Console
 
 			if (ConsoleFont == null)
 			{
-				ConsoleFont = Font.CreateDynamicFontFromOSFont("Courier New", 16);
+				ConsoleFont = Font.CreateDynamicFontFromOSFont("Consolas", 16);
 				Debug.LogWarning("Command Console Warning: Please assign a font.");
 			}
 
@@ -391,6 +391,7 @@ namespace ChickenIngot.Console
 				label_style.normal.textColor = GetLogColor(log.type);
 				GUILayout.Label(log.message, label_style);
 			}
+			GUILayout.Space(12);
 		}
 
 		void DrawGUIButtons()
