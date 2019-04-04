@@ -12,6 +12,27 @@ namespace ChickenIngot.Console
 		OpenFull
 	}
 
+	[System.Serializable]
+	public enum TerminalConsoleColor
+	{
+		Black			= System.ConsoleColor.Black,
+		DarkBlue		= System.ConsoleColor.DarkBlue,
+		DarkGreen		= System.ConsoleColor.DarkGreen,
+		DarkCyan		= System.ConsoleColor.DarkCyan,
+		DarkRed			= System.ConsoleColor.DarkRed,
+		DarkMagenta		= System.ConsoleColor.DarkMagenta,
+		DarkYellow		= System.ConsoleColor.DarkYellow,
+		Gray			= System.ConsoleColor.Gray,
+		DarkGray		= System.ConsoleColor.DarkGray,
+		Blue			= System.ConsoleColor.Blue,
+		Green			= System.ConsoleColor.Green,
+		Cyan			= System.ConsoleColor.Cyan,
+		Red				= System.ConsoleColor.Red,
+		Magenta			= System.ConsoleColor.Magenta,
+		Yellow			= System.ConsoleColor.Yellow,
+		White			= System.ConsoleColor.White
+	}
+
 	public class Terminal : MonoBehaviour
 	{
 		[Header("Window")]
@@ -27,13 +48,13 @@ namespace ChickenIngot.Console
 		[SerializeField]
 		float ToggleSpeed = 360;
 
-		[SerializeField] string ToggleHotkey      = "`";
-		[SerializeField] string ToggleFullHotkey  = "#`";
-		[SerializeField] int BufferSize           = 512;
+		[SerializeField] string ToggleHotkey		= "`";
+		[SerializeField] string ToggleFullHotkey	= "#`";
+		[SerializeField] int BufferSize				= 512;
 
 		[Header("Input")]
 		[SerializeField] Font ConsoleFont;
-		[SerializeField] string InputCaret        = ">";
+		[SerializeField] string InputCaret			= ">";
 		[SerializeField] bool ShowGUIButtons;
 		[SerializeField] bool RightAlignButtons;
 
@@ -41,14 +62,21 @@ namespace ChickenIngot.Console
 		[Range(0, 1)]
 		[SerializeField] float InputContrast;
 		[Range(0, 1)]
-		[SerializeField] float InputAlpha         = 0.5f;
+		[SerializeField] float InputAlpha			= 0.5f;
 
-		[SerializeField] Color BackgroundColor    = new Color(0f, 0f, 0f, 0.8f);
-		[SerializeField] Color ForegroundColor    = Color.white;
-		[SerializeField] Color ShellColor         = new Color(0.8f, 0.8f, 0.8f, 1f);
-		[SerializeField] Color InputColor         = Color.cyan;
-		[SerializeField] Color WarningColor       = Color.yellow;
-		[SerializeField] Color ErrorColor         = Color.red;
+		[SerializeField] Color BackgroundColor		= new Color(0f, 0f, 0f, 0.8f);
+		[SerializeField] Color ForegroundColor		= Color.white;
+		[SerializeField] Color ShellColor			= new Color(0.8f, 0.8f, 0.8f, 1f);
+		[SerializeField] Color InputColor			= Color.green;
+		[SerializeField] Color WarningColor			= Color.yellow;
+		[SerializeField] Color ErrorColor			= Color.red;
+
+		[Header("Batchmode")]
+		[SerializeField] TerminalConsoleColor ForegroundConsoleColor	= TerminalConsoleColor.White;
+		[SerializeField] TerminalConsoleColor ShellConsoleColor			= TerminalConsoleColor.Gray;
+		[SerializeField] TerminalConsoleColor InputConsoleColor			= TerminalConsoleColor.Green;
+		[SerializeField] TerminalConsoleColor WarningConsoleColor		= TerminalConsoleColor.Yellow;
+		[SerializeField] TerminalConsoleColor ErrorConsoleColor			= TerminalConsoleColor.Red;
 
 		TerminalState state;
 		bool input_fix;
@@ -66,6 +94,9 @@ namespace ChickenIngot.Console
 		GUIStyle input_style;
 		Texture2D background_texture;
 		Texture2D input_background_texture;
+
+		WindowsConsole windows_console;
+		WindowsConsoleInput windows_input;
 
 		public static CommandLog Buffer { get; private set; }
 		public static CommandShell Shell { get; private set; }
@@ -149,7 +180,21 @@ namespace ChickenIngot.Console
 			History = new CommandHistory();
 			Autocomplete = new CommandAutoComplete();
 
-			// Hook Unity log events
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+			if (Application.isBatchMode)
+			{
+				windows_console = new WindowsConsole();
+				windows_input = new WindowsConsoleInput((System.ConsoleColor)InputConsoleColor);
+
+				windows_console.Initialize();
+				windows_console.SetTitle("Rust Server");
+				windows_input.OnInputText += OnInputTextBatchmode;
+				Buffer.LogMessageReceived += HandleLogBatchmode;
+
+				Debug.Log("Batchmode Console Started");
+			}
+#endif
+
 			Application.logMessageReceived += HandleUnityLog;
 		}
 
@@ -206,6 +251,18 @@ namespace ChickenIngot.Console
 
 			HandleOpenness();
 			window = GUILayout.Window(88, window, DrawConsole, "", window_style);
+		}
+
+		void Update()
+		{
+			if (windows_input != null)
+				windows_input.Update();
+		}
+
+		void OnDestroy()
+		{
+			if (windows_console != null)
+				windows_console.Shutdown();
 		}
 
 		void SetupWindow()
@@ -393,6 +450,11 @@ namespace ChickenIngot.Console
 			RunCommand(copy);
 		}
 
+		void OnInputTextBatchmode(string obj)
+		{
+			RunCommand(obj);
+		}
+
 		/// <summary>
 		/// All you have to do is just call this method to run your command.
 		/// </summary>
@@ -440,6 +502,27 @@ namespace ChickenIngot.Console
 		{
 			Buffer.HandleLog(message, stack_trace, (TerminalLogType)type);
 			scroll_position.y = int.MaxValue;
+		}
+
+		void HandleLogBatchmode(LogItem log)
+		{
+			if (log.type == TerminalLogType.Warning)
+				System.Console.ForegroundColor = (System.ConsoleColor)WarningConsoleColor;
+			else if (log.type == TerminalLogType.Error)
+				System.Console.ForegroundColor = (System.ConsoleColor)ErrorConsoleColor;
+			else if (log.type == TerminalLogType.ShellMessage)
+				System.Console.ForegroundColor = (System.ConsoleColor)ShellConsoleColor;
+			else
+				System.Console.ForegroundColor = (System.ConsoleColor)ForegroundConsoleColor;
+
+			// We're half way through typing something, so clear this line ..
+			if (System.Console.CursorLeft != 0)
+				windows_input.ClearLine();
+
+			System.Console.WriteLine(log.message);
+
+			// If we were typing something re-add it.
+			windows_input.RedrawInputLine();
 		}
 
 		Color GetLogColor(TerminalLogType type)
