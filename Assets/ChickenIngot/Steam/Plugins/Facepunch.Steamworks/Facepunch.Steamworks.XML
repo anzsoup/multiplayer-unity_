@@ -72,6 +72,11 @@
             The folder in which this app is installed
             </summary>
         </member>
+        <member name="P:Facepunch.Steamworks.Client.CurrentCountry">
+            <summary>
+            The 2 digit ISO 3166-1-alpha-2 format country code (e.g. "US" or "UK")
+            </summary>
+        </member>
         <member name="P:Facepunch.Steamworks.Client.CurrentLanguage">
             <summary>
             The currently selected language
@@ -95,6 +100,14 @@
         <member name="M:Facepunch.Steamworks.Client.Dispose">
             <summary>
             Call when finished to shut down the Steam client.
+            </summary>
+        </member>
+        <member name="P:Facepunch.Steamworks.Client.IsLoggedOn">
+            <summary>
+            Checks if the current user's Steam client is connected and logged on to the Steam servers.
+            If it's not then no real-time services provided by the Steamworks API will be enabled. 
+            The Steam client will automatically be trying to recreate the connection as often as possible.
+            All of the API calls that rely on this will check internally.
             </summary>
         </member>
         <member name="P:Facepunch.Steamworks.Client.IsSubscribed">
@@ -1187,7 +1200,7 @@
             to tell which platform we're running
             </summary>
         </member>
-        <member name="F:Facepunch.Steamworks.Inventory.OnUpdate">
+        <member name="E:Facepunch.Steamworks.Inventory.OnUpdate">
             <summary>
             Called when the local client's items are first retrieved, and when they change.
             Obviously not called on the server.
@@ -1208,6 +1221,12 @@
         <member name="F:Facepunch.Steamworks.Inventory.SerializedExpireTime">
             <summary>
             Serialized data exprires after an hour. This is the time the value in SerializedItems will expire.
+            </summary>
+        </member>
+        <member name="F:Facepunch.Steamworks.Inventory.EnableItemProperties">
+            <summary>
+            Controls whether per-item properties (<see cref="P:Facepunch.Steamworks.Inventory.Item.Properties"/>) are available or not. Default true.
+            This can improve performance of full inventory updates.
             </summary>
         </member>
         <member name="M:Facepunch.Steamworks.Inventory.onDefinitionsUpdated(SteamNative.SteamInventoryDefinitionUpdate_t)">
@@ -1408,6 +1427,11 @@
         <member name="M:Facepunch.Steamworks.Inventory.Definition.GetStringProperty(System.String)">
             <summary>
             Read a raw property from the definition schema
+            </summary>
+        </member>
+        <member name="M:Facepunch.Steamworks.Inventory.Definition.GetCachedStringProperty(System.String)">
+            <summary>
+            Read and cache a raw property from the definition schema to make accessing it faster in the future
             </summary>
         </member>
         <member name="M:Facepunch.Steamworks.Inventory.Definition.GetBoolProperty(System.String)">
