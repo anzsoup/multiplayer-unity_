@@ -1,4 +1,4 @@
-# ChickenIngot Multiplayer Template
+# Soysaeu Multiplayer Template
 멀티플레이어 게임을 만들기 위해 필요한 기능들을 모아둔 템플릿 프로젝트입니다.  
 다음 기능들을 지원합니다.
 
