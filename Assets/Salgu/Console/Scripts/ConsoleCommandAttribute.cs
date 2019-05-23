@@ -1,0 +1,32 @@
+using System;
+
+namespace Salgu.Console
+{
+	[AttributeUsage(AttributeTargets.Method)]
+	public class ConsoleCommandAttribute : Attribute
+	{
+		int min_arg_count = 0;
+		int max_arg_count = -1;
+		
+		public int MinArgCount
+		{
+			get { return min_arg_count; }
+			set { min_arg_count = value; }
+		}
+
+		public int MaxArgCount
+		{
+			get { return max_arg_count; }
+			set { max_arg_count = value; }
+		}
+
+		public string Name { get; set; }
+		public string Help { get; set; }
+		public string Hint { get; set; }
+
+		public ConsoleCommandAttribute(string command_name = null)
+		{
+			Name = command_name;
+		}
+	}
+}
