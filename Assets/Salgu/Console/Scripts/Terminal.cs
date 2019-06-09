@@ -106,7 +106,7 @@ namespace Salgu.Console
 		public bool IsClosed { get { return state == TerminalState.Close && Mathf.Approximately(current_open_t, open_target); } }
 
 #if UNITY_EDITOR
-		[MenuItem("GameObject/Terminal", priority = 30)]
+		[MenuItem("GameObject/Salgu/Terminal", priority = 30)]
 		static void CreateGameObject()
 		{
 			var find = FindObjectOfType<Terminal>();

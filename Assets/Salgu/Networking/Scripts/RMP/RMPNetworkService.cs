@@ -45,7 +45,7 @@ namespace Salgu.Networking
 		#endregion
 
 #if UNITY_EDITOR
-		[MenuItem("GameObject/RMP Network Service", priority = 30)]
+		[MenuItem("GameObject/Salgu/RMP Network Service", priority = 30)]
 		static void CreateGameObject()
 		{
 			var find = FindObjectOfType<RMPNetworkService>();

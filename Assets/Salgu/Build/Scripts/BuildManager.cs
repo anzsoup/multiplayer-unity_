@@ -93,7 +93,7 @@ namespace Salgu.Build
 			}
 		}
 
-		[MenuItem("GameObject/Build Manager", priority = 30)]
+		[MenuItem("GameObject/Salgu/Build Manager", priority = 30)]
 		static void CreateGameObject()
 		{
 			var find = FindObjectOfType<BuildManager>();

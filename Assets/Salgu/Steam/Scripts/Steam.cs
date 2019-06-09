@@ -106,7 +106,7 @@ namespace Salgu.Steam
 		#endregion
 
 #if UNITY_EDITOR
-		[MenuItem("GameObject/Steam", priority = 30)]
+		[MenuItem("GameObject/Salgu/Steam", priority = 30)]
 		static void CreateGameObject()
 		{
 			var find = FindObjectOfType<Steam>();
