@@ -13,7 +13,7 @@ namespace Salgu.Networking
 		private static RMPNetworkService _instance = null;
 
 		[SerializeField]
-		private RMPNetworkView[] _replicateTable;
+		RMPNetworkView[] _replicateTable = null;
 
 		public static bool IsInitialized { get; private set; }
 		public static RMPNetworkView[] ReplicateTable { get { return _instance._replicateTable; } }
@@ -21,19 +21,14 @@ namespace Salgu.Networking
 		#region Events
 
 		[Header("Server Side Events")]
-		[SerializeField]
-		private StartServerEvent _onStartServer;
-		[SerializeField]
-		private StopServerEvent _onStopServer;
-		[SerializeField]
-		private ClientConnectEvent _onClientConnect;
-		[SerializeField]
-		private ClientDisconnectEvent _onClientDisconnect;
+		[SerializeField] StartServerEvent _onStartServer = null;
+		[SerializeField] StopServerEvent _onStopServer = null;
+		[SerializeField] ClientConnectEvent _onClientConnect = null;
+		[SerializeField] ClientDisconnectEvent _onClientDisconnect = null;
+
 		[Header("Client Side Events")]
-		[SerializeField]
-		private ConnectToServerEvent _onConnectToServer;
-		[SerializeField]
-		private DisconnectFromServerEvent _onDisconnectFromServer;
+		[SerializeField] ConnectToServerEvent _onConnectToServer = null;
+		[SerializeField] DisconnectFromServerEvent _onDisconnectFromServer = null;
 
 		public static StartServerEvent OnStartServer { get { return _instance._onStartServer; } }
 		public static StopServerEvent OnStopServer { get { return _instance._onStopServer; } }

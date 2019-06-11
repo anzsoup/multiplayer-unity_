@@ -7,61 +7,61 @@ using UnityEngine.UI;
 //
 public class SteamAvatar : MonoBehaviour
 {
-    public ulong SteamId;
-    public Friends.AvatarSize Size;
-    public Texture FallbackTexture;
+	public ulong SteamId;
+	public Friends.AvatarSize Size;
+	public Texture FallbackTexture;
 
-    void Start()
-    {
-        if ( SteamId > 0 )
-            Fetch( SteamId );
-    }
+	void Start()
+	{
+		if ( SteamId > 0 )
+			Fetch( SteamId );
+	}
 
-    public void Fetch( ulong steamid )
-    {
-        if ( steamid == 0 ) return;
+	public void Fetch( ulong steamid )
+	{
+		if ( steamid == 0 ) return;
 
-        if (Client.Instance == null)
-        {
-            ApplyTexture(FallbackTexture);
-            return;
-        }
+		if (Client.Instance == null)
+		{
+			ApplyTexture(FallbackTexture);
+			return;
+		}
 
-        SteamId = steamid;
-        Client.Instance.Friends.GetAvatar(Size, SteamId, ( i ) => OnImage( i, steamid ));
-    }
+		SteamId = steamid;
+		Client.Instance.Friends.GetAvatar(Size, SteamId, ( i ) => OnImage( i, steamid ));
+	}
 
-    private void OnImage( Facepunch.Steamworks.Image image, ulong steamid )
-    {
-        if ( steamid != SteamId )
-            return;
+	private void OnImage( Facepunch.Steamworks.Image image, ulong steamid )
+	{
+		if ( steamid != SteamId )
+			return;
 
-        if ( image == null )
-        {
+		if ( image == null )
+		{
 			Debug.LogWarning("Failed to get avatar.");
-            ApplyTexture(FallbackTexture);
-            return;
-        }
+			ApplyTexture(FallbackTexture);
+			return;
+		}
 
-        var texture = new Texture2D(image.Width, image.Height);
+		var texture = new Texture2D(image.Width, image.Height);
 
-        for (int x = 0; x < image.Width; x++)
-            for (int y = 0; y < image.Height; y++)
-            {
-                var p = image.GetPixel(x, y);
+		for (int x = 0; x < image.Width; x++)
+			for (int y = 0; y < image.Height; y++)
+			{
+				var p = image.GetPixel(x, y);
 
-                texture.SetPixel(x, image.Height - y, new UnityEngine.Color( p.r / 255.0f, p.g / 255.0f, p.b / 255.0f, p.a / 255.0f ) );
-            }
+				texture.SetPixel(x, image.Height - y, new UnityEngine.Color( p.r / 255.0f, p.g / 255.0f, p.b / 255.0f, p.a / 255.0f ) );
+			}
 
-        texture.Apply();
+		texture.Apply();
 
-        ApplyTexture(texture);
-    }
+		ApplyTexture(texture);
+	}
 
-    private void ApplyTexture(Texture texture)
-    {
-        var rawImage = GetComponent<RawImage>();
-        if (rawImage != null)
-            rawImage.texture = texture;
-    }
+	private void ApplyTexture(Texture texture)
+	{
+		var rawImage = GetComponent<RawImage>();
+		if (rawImage != null)
+			rawImage.texture = texture;
+	}
 }

@@ -10,8 +10,7 @@ namespace Salgu.Networking.Demo
 
 	public class DemoChatting : MonoBehaviour
 	{
-		[SerializeField]
-		private RMPNetworkView _view;
+		[SerializeField] RMPNetworkView _view = null;
 
 		public void SendChat(string msg)
 		{

@@ -9,13 +9,11 @@ namespace Salgu.Steam.Demo
 	///		Facepunch.Steamworks 는 다양한 스팀 기능을 지원한다.
 	///		이 스크립트에는 스팀 프로필 이미지를 불러오는 예제가 작성되어 있다.
 	/// -----------------------------------------------------------------------------------
-
+	
 	public class DemoAvatar : MonoBehaviour
 	{
-		[SerializeField]
-		private RawImage _ui;
-		[SerializeField]
-		private Facepunch.Steamworks.Friends.AvatarSize _size;
+		[SerializeField] RawImage _ui = null;
+		[SerializeField] Facepunch.Steamworks.Friends.AvatarSize _size = Facepunch.Steamworks.Friends.AvatarSize.Small;
 
 		IEnumerator Start()
 		{

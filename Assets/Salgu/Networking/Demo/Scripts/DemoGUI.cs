@@ -4,11 +4,10 @@ namespace Salgu.Networking.Demo
 {
 	public class DemoGUI : MonoBehaviour
 	{
-		[SerializeField]
-		private DemoChatting _demoChatting;
-		private string _log;
-		private string _chatInput;
-
+		[SerializeField] DemoChatting _demoChatting = null;
+		string _log;
+		string _chatInput;
+		
 		void Start()
 		{
 			Application.logMessageReceived += HandleLog;

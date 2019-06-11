@@ -5,17 +5,13 @@ namespace Salgu.Steam.Demo
 {
 	public class DemoGUI : MonoBehaviour
 	{
-		[SerializeField]
-		private string _modDir = "steam-demo";
-		[SerializeField]
-		private string _gameDesc = "Steam Demo";
-		[SerializeField]
-		private string _version = "1.0";
-		[SerializeField]
-		private string _name = "Steam Demo Server";
-		[SerializeField]
-		private int _maxPlayers = 20;
-		private string _log;
+		[SerializeField] string _modDir = "steam-demo";
+		[SerializeField] string _gameDesc = "Steam Demo";
+		[SerializeField] string _version = "1.0";
+		[SerializeField] string _name = "Steam Demo Server";
+		[SerializeField] int _maxPlayers = 20;
+
+		string _log;
 
 		void Start()
 		{

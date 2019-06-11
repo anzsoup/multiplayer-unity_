@@ -9,8 +9,7 @@ namespace Salgu.Networking.Demo
 
 	public class Demo : MonoBehaviour
 	{
-		[SerializeField]
-		private DemoReplicate _demoReplicate;
+		[SerializeField] DemoReplicate _demoReplicate = null;
 
 		void Awake()
 		{

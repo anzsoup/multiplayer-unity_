@@ -13,7 +13,6 @@ namespace Salgu.Steam
 	/// RMP Network Service 객체가 존재하면 서버를 열때 스팀서버가 활성화 된다.
 	/// GameObject- Steam 메뉴를 선택하여 게임오브젝트를 씬에 추가할 수 있다.
 	/// </summary>
-	[RequireComponent(typeof(RMPNetworkView))]
 	public class Steam : MonoBehaviour
 	{
 		private enum ConnectionOperationType
@@ -31,17 +30,16 @@ namespace Salgu.Steam
 		}
 
 		private static Steam _instance = null;
-
-		[SerializeField]
-		private RMPNetworkView _view;
+		
+		[SerializeField] RMPNetworkView _view = null;
 		[Tooltip("스팀에 게임을 등록한 후 발급받은 Id를 입력한다. 없으면 그대로 둔다.")]
-		[SerializeField]
-		private uint _appId;
+		[SerializeField] uint _appId = 480;
 		[Tooltip("체크하면 스팀 클라이언트 초기화를 하지 않는다. 서버 빌드 시 사용한다.")]
-		[SerializeField]
-		private bool _isServerOnly;
-		private readonly Queue<ConnectionOperation> _operationQueue = new Queue<ConnectionOperation>();
-		private ConnectionOperation _waitingUser;
+		[SerializeField] bool _isServerOnly = false;
+
+		
+		readonly Queue<ConnectionOperation> _operationQueue = new Queue<ConnectionOperation>();
+		ConnectionOperation _waitingUser;
 
 		/// <summary>
 		/// Steam 클래스에 접근할 땐 이 값이 true 인지 반드시 확인해야 한다.
@@ -81,20 +79,14 @@ namespace Salgu.Steam
 		#region Events
 
 		[Header("Server Side Events")]
-		[SerializeField]
-		private StartSteamServerEvent _onStartSteamServer;
-		[SerializeField]
-		private StopSteamServerEvent _onStopSteamServer;
-		[SerializeField]
-		private SteamUserJoinEvent _onSteamUserJoin;
-		[SerializeField]
-		private SteamUserExitEvent _onSteamUserExit;
+		[SerializeField] StartSteamServerEvent _onStartSteamServer = null;
+		[SerializeField] StopSteamServerEvent _onStopSteamServer = null;
+		[SerializeField] SteamUserJoinEvent _onSteamUserJoin = null;
+		[SerializeField] SteamUserExitEvent _onSteamUserExit = null;
 
 		[Header("Client Side Events")]
-		[SerializeField]
-		private JoinSteamServerEvent _onJoinSteamServer;
-		[SerializeField]
-		private ExitSteamServerEvent _onExitSteamServer;
+		[SerializeField] JoinSteamServerEvent _onJoinSteamServer = null;
+		[SerializeField] ExitSteamServerEvent _onExitSteamServer = null;
 
 		public StartSteamServerEvent OnStartSteamServer { get { return _onStartSteamServer; } }
 		public StopSteamServerEvent OnStopSteamServer { get { return _onStopSteamServer; } }

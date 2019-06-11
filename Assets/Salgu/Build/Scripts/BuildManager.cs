@@ -9,14 +9,10 @@ namespace Salgu.Build
 	public class BuildManager : MonoBehaviour
 	{
 		[Header("Build Info")]
-		[SerializeField]
-		private string _companyName = "Chicken Ingot";
-		[SerializeField]
-		private string _productName = "Multiplayer Starter Kit";
-		[SerializeField]
-		private string _binaryName = "bin";
-		[SerializeField]
-		private string _version = "1.0";
+		[SerializeField] string _companyName = "Chicken Ingot";
+		[SerializeField] string _productName = "Multiplayer Starter Kit";
+		[SerializeField] string _binaryName = "bin";
+		[SerializeField] string _version = "1.0";
 
 		public static string CompanyName { get; private set; }
 		public static string ProductName { get; private set; }
@@ -39,31 +35,31 @@ namespace Salgu.Build
 #if UNITY_EDITOR
 		[Header("Build Settings")]
 		[SerializeField] [ReadOnly]
-		private SceneAsset _firstScene;
+		SceneAsset _firstScene = null;
 
 		[SerializeField]
 		[Tooltip("빌드에 포함시킬 Scene들.")]
-		private SceneAsset[] _otherScenes;
+		SceneAsset[] _otherScenes = null;
 
 		[SerializeField]
 		[Tooltip("빌드 시 PlayerSettings에 추가할 심볼. 여러개의 심볼은 세미콜론으로 구분한다.")]
-		private string _symbols;
+		string _symbols = "";
 
 		[SerializeField]
 		[Tooltip("Scene이 열릴 때마다 심볼을 적용한다.")]
-		private bool _autoSetSymbols;
+		bool _autoSetSymbols = false;
 
 		[SerializeField]
 		[Tooltip("Server Only 스팀 어플리케이션을 빌드하는 경우, " +
 			"Facepuch.Steamworks 의 문제점으로 인해 32비트 환경에서는 동작하지 않는 점 유의.")]
-		private BuildTarget _buildTarget = BuildTarget.StandaloneWindows64;
+		BuildTarget _buildTarget = BuildTarget.StandaloneWindows64;
 
 		[SerializeField] [EnumFlag]
-		private BuildOptions _buildOptions = BuildOptions.None;
+		BuildOptions _buildOptions = BuildOptions.None;
 
 		[SerializeField]
 		[Tooltip("어플리케이션을 배치모드로 열 수 있는 .bat 파일을 빌드 결과물에 포함시킨다.")]
-		private bool _createBatchModeRunFile;
+		bool _createBatchModeRunFile = false;
 
 		[CustomEditor(typeof(BuildManager))]
 		public class Inspector : Editor

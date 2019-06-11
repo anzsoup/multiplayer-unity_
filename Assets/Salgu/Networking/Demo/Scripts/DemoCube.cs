@@ -14,14 +14,12 @@ namespace Salgu.Networking.Demo
 	///	   서버의 오브젝트를 클라이언트에 복제하여 서로 RMP 통신이 가능하게 한다.
 	///    프리팹이 RMPUnityService 의 'Replicate Table' 에 등록되어 있어야 한다.
 	/// -----------------------------------------------------------------------------------
-
+	
 	public class DemoCube : MonoBehaviour
 	{
-		[SerializeField]
-		private RMPNetworkView _view;
-		[SerializeField]
-		private Rigidbody _rigidbody;
-		private float _lastSyncTime;
+		[SerializeField] RMPNetworkView _view = null;
+		[SerializeField] Rigidbody _rigidbody = null;
+		float _lastSyncTime;
 
 		public RMPNetworkView View { get { return _view; } }
 
