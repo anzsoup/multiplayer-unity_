@@ -52,7 +52,7 @@ namespace Salgu.Networking
 			}
 		}
 
-		[Client]
+		[ClientOnly]
 		private void ReceiveReplicate(Packet msg)
 		{
 			var index = msg.PopInt32();
@@ -65,7 +65,7 @@ namespace Salgu.Networking
 			view.SendReflectionMessage(this, "OnReplicate", msg);
 		}
 
-		[Client]
+		[ClientOnly]
 		private void ReceiveRemove(Packet msg)
 		{
 			var guid = msg.PopString();
@@ -138,7 +138,7 @@ namespace Salgu.Networking
 			NetworkService.Send(HostId, ConnectionId, msg);
 		}
 
-		[Server]
+		[ServerOnly]
 		public void SendReplicate(RMPNetworkView view)
 		{
 			var msg = new Packet();
@@ -152,7 +152,7 @@ namespace Salgu.Networking
 			NetworkService.Send(HostId, ConnectionId, msg);
 		}
 
-		[Server]
+		[ServerOnly]
 		public void SendRemove(RMPNetworkView view)
 		{
 			var msg = new Packet();
