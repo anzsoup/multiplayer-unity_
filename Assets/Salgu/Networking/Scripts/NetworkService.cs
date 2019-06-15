@@ -12,7 +12,7 @@ namespace Salgu.Networking
 	{
 		private static NetworkService _instance = null;
 		private static INetworkEventHandler _handler = null;
-		private byte[] _buffer = new byte[Packet.BUFFER_LENGTH];
+		private byte[] _buffer = new byte[Packet.DEFAULT_SIZE];
 
 		public static bool Initialized { get; private set; }
 		public static bool IsServer { get; private set; }
@@ -78,6 +78,21 @@ namespace Salgu.Networking
 				  _buffer.Length,
 				  out dataSize,
 				  out errorCode);
+
+				// Buffer wasn't big enough, so specify the exact buffer size and try one more time.
+				// And it is reasonable to maintain resized buffer.
+				if (_buffer.Length < dataSize)
+				{
+					_buffer = new byte[dataSize];
+					netEventType = NetworkTransport.Receive(
+					  out hostId,
+					  out connectionId,
+					  out channelId,
+					  _buffer,
+					  _buffer.Length,
+					  out dataSize,
+					  out errorCode);
+				}
 
 				var error = (NetworkError)errorCode;
 				if (error != NetworkError.Ok)

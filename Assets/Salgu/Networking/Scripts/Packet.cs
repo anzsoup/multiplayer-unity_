@@ -9,7 +9,7 @@ namespace Salgu.Networking
 	public partial class Packet
 	{
 		// 세그먼팅 되지 않는 적당한 크기임
-		public const int BUFFER_LENGTH = 1440;
+		public const int DEFAULT_SIZE = 1440;
 
 		public byte[] Buffer { get; private set; }
 		public int Position { get; private set; }
@@ -17,20 +17,20 @@ namespace Salgu.Networking
 
 		public Packet()
 		{
-			Buffer = new byte[BUFFER_LENGTH];
+			Buffer = new byte[DEFAULT_SIZE];
 			Position = 0;
 		}
 
 		public Packet(byte[] buffer)
 		{
-			Buffer = new byte[BUFFER_LENGTH];
+			Buffer = new byte[buffer.Length];
 			Array.Copy(buffer, Buffer, buffer.Length);
 			Position = 0;
 		}
 
 		public Packet(Packet orig)
 		{
-			Buffer = new byte[BUFFER_LENGTH];
+			Buffer = new byte[orig.Buffer.Length];
 			Array.Copy(orig.Buffer, Buffer, orig.Buffer.Length);
 			Position = orig.Position;
 		}
@@ -38,7 +38,7 @@ namespace Salgu.Networking
 		private void MovePosition(int size)
 		{
 			Position += size;
-			if (Position >= BUFFER_LENGTH)
+			if (Position >= Buffer.Length)
 				Debug.LogWarning("[Packet] Position overflow. It will cause ArrayOutOfRangeException.");
 		}
 
