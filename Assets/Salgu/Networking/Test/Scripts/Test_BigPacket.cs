@@ -6,8 +6,8 @@ namespace Salgu.Networking.Test
 {
 	public class Test_BigPacket : MonoBehaviour
 	{
-		[SerializeField] RMPNetworkView _view;
-		[SerializeField] bool _isClient;
+		[SerializeField] RMPNetworkView _view = null;
+		[SerializeField] bool _isClient = false;
 
 		IEnumerator Start()
 		{
