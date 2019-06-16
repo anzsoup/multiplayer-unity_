@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 
 namespace Salgu.Networking
@@ -6,311 +7,306 @@ namespace Salgu.Networking
 	/// <summary>
 	/// 바이트 스트림을 쉽게 읽고 쓰기 위한 인터페이스를 제공한다.
 	/// </summary>
-	public partial class Packet
+	public sealed partial class Packet
 	{
 		// 세그먼팅 되지 않는 적당한 크기임
 		public const int DEFAULT_SIZE = 1440;
 
-		public byte[] Buffer { get; private set; }
-		public int Position { get; private set; }
-		public int Size { get { return Position; } }
+		/// <summary>
+		/// To avoid memory allocation when Read() called.
+		/// </summary>
+		byte[] _readBuffer = new byte[DEFAULT_SIZE];
+
+		/// <summary>
+		/// You are welcome to manage buffer directly if you want!
+		/// </summary>
+		public MemoryStream Buffer { get; private set; }
+
+		/// <summary>
+		/// Equal to Buffer.Length
+		/// </summary>
+		public long Length { get { return Buffer.Length; } }
 
 		public Packet()
 		{
-			Buffer = new byte[DEFAULT_SIZE];
-			Position = 0;
+			Buffer = new MemoryStream(DEFAULT_SIZE);
+		}
+
+		public Packet(int capacity)
+		{
+			Buffer = new MemoryStream(capacity);
 		}
 
 		public Packet(byte[] buffer)
 		{
-			Buffer = new byte[buffer.Length];
-			Array.Copy(buffer, Buffer, buffer.Length);
-			Position = 0;
+			Buffer = new MemoryStream(buffer);
 		}
 
 		public Packet(Packet orig)
 		{
-			Buffer = new byte[orig.Buffer.Length];
-			Array.Copy(orig.Buffer, Buffer, orig.Buffer.Length);
-			Position = orig.Position;
+			Buffer = new MemoryStream(orig.Buffer.ToArray());
 		}
 
-		private void MovePosition(int size)
+		~Packet()
 		{
-			Position += size;
-			if (Position >= Buffer.Length)
-				Debug.LogWarning("[Packet] Position overflow. It will cause ArrayOutOfRangeException.");
+			Buffer.Dispose();
 		}
 
-		#region Push
-
-		public void Push(Byte data)
+		public byte[] ToArray()
 		{
-			Buffer[Position] = data;
-			MovePosition(sizeof(Byte));
+			return Buffer.ToArray();
 		}
 
-		public void Push(SByte data)
+		#region Write
+
+		public void Write(Byte data)
 		{
-			Push((Byte)data);
+			Buffer.WriteByte(data);
 		}
 
-		public void Push(Boolean data)
+		public void Write(SByte data)
+		{
+			Write((Byte)data);
+		}
+
+		public void Write(Boolean data)
 		{
 			if (data)
-				Push((Byte)1);
+				Write((Byte)1);
 			else
-				Push((Byte)0);
+				Write((Byte)0);
 		}
 
-		public void Push(Int16 data)
+		public void Write(Int16 data)
 		{
-			var tempBuffer = BitConverter.GetBytes(data);
-			tempBuffer.CopyTo(Buffer, Position);
-			MovePosition(tempBuffer.Length);
+			var temp = BitConverter.GetBytes(data);
+			Buffer.Write(temp, 0, temp.Length);
 		}
 
-		public void Push(UInt16 data)
+		public void Write(UInt16 data)
 		{
-			Push((Int16)data);
+			Write((Int16)data);
 		}
 
-		public void Push(Int32 data)
+		public void Write(Int32 data)
 		{
-			var tempBuffer = BitConverter.GetBytes(data);
-			tempBuffer.CopyTo(Buffer, Position);
-			MovePosition(tempBuffer.Length);
+			var temp = BitConverter.GetBytes(data);
+			Buffer.Write(temp, 0, temp.Length);
 		}
 
-		public void Push(UInt32 data)
+		public void Write(UInt32 data)
 		{
-			Push((Int32)data);
+			Write((Int32)data);
 		}
 
-		public void Push(Int64 data)
+		public void Write(Int64 data)
 		{
-			var tempBuffer = BitConverter.GetBytes(data);
-			tempBuffer.CopyTo(Buffer, Position);
-			MovePosition(tempBuffer.Length);
+			var temp = BitConverter.GetBytes(data);
+			Buffer.Write(temp, 0, temp.Length);
 		}
 
-		public void Push(UInt64 data)
+		public void Write(UInt64 data)
 		{
-			Push((Int64)data);
+			Write((Int64)data);
 		}
 
-		public void Push(Single data)
+		public void Write(Single data)
 		{
-			var tempBuffer = BitConverter.GetBytes(data);
-			tempBuffer.CopyTo(Buffer, Position);
-			MovePosition(tempBuffer.Length);
+			var temp = BitConverter.GetBytes(data);
+			Buffer.Write(temp, 0, temp.Length);
 		}
 
-		public void Push(Double data)
+		public void Write(Double data)
 		{
-			var tempBuffer = BitConverter.GetBytes(data);
-			tempBuffer.CopyTo(Buffer, Position);
-			MovePosition(tempBuffer.Length);
+			var temp = BitConverter.GetBytes(data);
+			Buffer.Write(temp, 0, temp.Length);
 		}
 
-		public void Push(Char data)
+		public void Write(Char data)
 		{
-			var tempBuffer = BitConverter.GetBytes(data);
-			tempBuffer.CopyTo(Buffer, Position);
-			MovePosition(tempBuffer.Length);
+			var temp = BitConverter.GetBytes(data);
+			Buffer.Write(temp, 0, temp.Length);
 		}
 
-		public void Push(Byte[] data)
+		public void Write(Byte[] data)
 		{
-			var len = data.Length;
-			Push(len);
-			data.CopyTo(Buffer, Position);
-			MovePosition(data.Length);
+			Write(data.Length);
+			Buffer.Write(data, 0, data.Length);
 		}
 
-		public void Push(String data)
+		public void Write(String data)
 		{
 			if (data == null) data = "";
-			var tempBuffer = System.Text.Encoding.UTF8.GetBytes(data);
-			Push(tempBuffer);
+			var temp = System.Text.Encoding.UTF8.GetBytes(data);
+			Write(temp);
 		}
 
-		public void Push(Transform transform)
+		public void Write(Transform transform)
 		{
 			/// scale은 hierarcy와 밀접하기 때문에
 			/// hierarcy 관계까지 완벽하게 주고받을 게 아니라면 scale은 제외한다.
 
 			var position = transform.position;
 			var rotation = transform.rotation;
-			Push(position);
-			Push(rotation);
+			Write(position);
+			Write(rotation);
 		}
 
-		public void Push(Vector2 v)
+		public void Write(Vector2 v)
 		{
-			Push(v.x);
-			Push(v.y);
+			Write(v.x);
+			Write(v.y);
 		}
 
-		public void Push(Vector3 v)
+		public void Write(Vector3 v)
 		{
-			Push(v.x);
-			Push(v.y);
-			Push(v.z);
+			Write(v.x);
+			Write(v.y);
+			Write(v.z);
 		}
 
-		public void Push(Quaternion q)
+		public void Write(Quaternion q)
 		{
-			Push(q.x);
-			Push(q.y);
-			Push(q.z);
-			Push(q.w);
+			Write(q.x);
+			Write(q.y);
+			Write(q.z);
+			Write(q.w);
 		}
 
-		public void Push(Vector2Int v)
+		public void Write(Vector2Int v)
 		{
-			Push(v.x);
-			Push(v.y);
+			Write(v.x);
+			Write(v.y);
 		}
 
-		public void Push(Vector3Int v)
+		public void Write(Vector3Int v)
 		{
-			Push(v.x);
-			Push(v.y);
-			Push(v.z);
+			Write(v.x);
+			Write(v.y);
+			Write(v.z);
 		}
 
 		#endregion
 
-		#region Pop
+		#region Read
 
-		public Byte PopByte()
+		public Byte ReadByte()
 		{
-			var data = Buffer[Position];
-			MovePosition(sizeof(Byte));
+			return (Byte)Buffer.ReadByte();
+		}
+
+		public SByte ReadSByte()
+		{
+			return (SByte)ReadByte();
+		}
+
+		public Int16 ReadInt16()
+		{
+			Buffer.Read(_readBuffer, 0, sizeof(Int16));
+			return BitConverter.ToInt16(_readBuffer, 0);
+		}
+
+		public UInt16 ReadUInt16()
+		{
+			var data = (UInt16)ReadInt16();
 			return data;
 		}
 
-		public SByte PopSByte()
+		public Int32 ReadInt32()
 		{
-			var data = (SByte)PopByte();
+			Buffer.Read(_readBuffer, 0, sizeof(Int32));
+			return BitConverter.ToInt32(_readBuffer, 0);
+		}
+
+		public UInt32 ReadUInt32()
+		{
+			var data = (UInt32)ReadInt32();
 			return data;
 		}
 
-		public Int16 PopInt16()
+		public Int64 ReadInt64()
 		{
-			var data = BitConverter.ToInt16(Buffer, Position);
-			MovePosition(sizeof(Int16));
+			Buffer.Read(_readBuffer, 0, sizeof(Int64));
+			return BitConverter.ToInt64(_readBuffer, 0);
+		}
+
+		public UInt64 ReadUInt64()
+		{
+			var data = (UInt64)ReadInt64();
 			return data;
 		}
 
-		public UInt16 PopUInt16()
+		public Single ReadSingle()
 		{
-			var data = (UInt16)PopInt16();
-			return data;
+			Buffer.Read(_readBuffer, 0, sizeof(Single));
+			return BitConverter.ToSingle(_readBuffer, 0);
 		}
 
-		public Int32 PopInt32()
+		public Double ReadDouble()
 		{
-			var data = BitConverter.ToInt32(Buffer, Position);
-			MovePosition(sizeof(Int32));
-			return data;
+			Buffer.Read(_readBuffer, 0, sizeof(Double));
+			return BitConverter.ToDouble(_readBuffer, 0);
 		}
 
-		public UInt32 PopUInt32()
+		public Char ReadChar()
 		{
-			var data = (UInt32)PopInt32();
-			return data;
+			Buffer.Read(_readBuffer, 0, sizeof(Char));
+			return BitConverter.ToChar(_readBuffer, 0);
 		}
 
-		public Int64 PopInt64()
+		public Boolean ReadBoolean()
 		{
-			var data = BitConverter.ToInt64(Buffer, Position);
-			MovePosition(sizeof(Int64));
-			return data;
-		}
-
-		public UInt64 PopUInt64()
-		{
-			var data = (UInt64)PopInt64();
-			return data;
-		}
-
-		public Single PopSingle()
-		{
-			var data = BitConverter.ToSingle(Buffer, Position);
-			MovePosition(sizeof(Single));
-			return data;
-		}
-
-		public Double PopDouble()
-		{
-			var data = BitConverter.ToDouble(Buffer, Position);
-			MovePosition(sizeof(Double));
-			return data;
-		}
-
-		public Char PopChar()
-		{
-			var data = BitConverter.ToChar(Buffer, Position);
-			MovePosition(sizeof(Char));
-			return data;
-		}
-
-		public Boolean PopBoolean()
-		{
-			var data = PopByte();
+			var data = ReadByte();
 			return data == 1;
 		}
 
-		public String PopString()
+		public String ReadString()
 		{
-			var len = PopInt32();
-			var data = System.Text.Encoding.UTF8.GetString(Buffer, Position, len);
-			MovePosition(len);
+			var len = ReadInt32();
+			Buffer.Read(_readBuffer, 0, len);
+			var data = System.Text.Encoding.UTF8.GetString(_readBuffer, 0, len);
 			return data;
 		}
 
-		public Byte[] PopByteArray()
+		public Byte[] ReadByteArray()
 		{
-			var len = PopInt32();
+			var len = ReadInt32();
 			var data = new Byte[len];
-			Array.Copy(Buffer, Position, data, 0, len);
-			MovePosition(len);
+			Buffer.Read(data, 0, len);
 			return data;
 		}
 
-		public void PopTransform(Transform transform)
+		public void ReadTransform(Transform transform)
 		{
-			var position = PopVector3();
-			var rotation = PopQuaternion();
+			var position = ReadVector3();
+			var rotation = ReadQuaternion();
 			transform.position = position;
 			transform.rotation = rotation;
 		}
 
-		public Vector2 PopVector2()
+		public Vector2 ReadVector2()
 		{
-			return new Vector2(PopSingle(), PopSingle());
+			return new Vector2(ReadSingle(), ReadSingle());
 		}
 
-		public Vector3 PopVector3()
+		public Vector3 ReadVector3()
 		{
-			return new Vector3(PopSingle(), PopSingle(), PopSingle());
+			return new Vector3(ReadSingle(), ReadSingle(), ReadSingle());
 		}
 
-		public Quaternion PopQuaternion()
+		public Quaternion ReadQuaternion()
 		{
-			return new Quaternion(PopSingle(), PopSingle(), PopSingle(), PopSingle());
+			return new Quaternion(ReadSingle(), ReadSingle(), ReadSingle(), ReadSingle());
 		}
 
-		public Vector2Int PopVector2Int()
+		public Vector2Int ReadVector2Int()
 		{
-			return new Vector2Int(PopInt32(), PopInt32());
+			return new Vector2Int(ReadInt32(), ReadInt32());
 		}
 
-		public Vector3Int PopVector3Int()
+		public Vector3Int ReadVector3Int()
 		{
-			return new Vector3Int(PopInt32(), PopInt32(), PopInt32());
+			return new Vector3Int(ReadInt32(), ReadInt32(), ReadInt32());
 		}
 
 		#endregion

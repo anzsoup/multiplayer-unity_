@@ -240,7 +240,7 @@ namespace Salgu.Networking
 			try
 			{
 				byte error;
-				NetworkTransport.Send(hostId, connectionId, NetworkConfig.Channels[channel], msg.Buffer, msg.Size, out error);
+				NetworkTransport.Send(hostId, connectionId, NetworkConfig.Channels[channel], msg.ToArray(), (int)msg.Length, out error);
 				if ((NetworkError)error != NetworkError.Ok)
 				{
 					Debug.LogWarning(string.Format("Failed to send. : {0}", (NetworkError)error));

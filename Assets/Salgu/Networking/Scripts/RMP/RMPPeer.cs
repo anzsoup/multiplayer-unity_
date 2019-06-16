@@ -33,13 +33,13 @@ namespace Salgu.Networking
 
 		private void ReceiveRPC(Packet msg)
 		{
-			var guid = msg.PopString();
-			var methodName = msg.PopString();
-			var numOfParams = msg.PopInt32();
+			var guid = msg.ReadString();
+			var methodName = msg.ReadString();
+			var numOfParams = msg.ReadInt32();
 			var parameters = new object[numOfParams];
 
 			for (int i = 0; i < numOfParams; ++i)
-				parameters[i] = RMPEncoding.PopParameter(msg);
+				parameters[i] = RMPEncoding.ReadParameter(msg);
 
 			try
 			{
@@ -55,8 +55,8 @@ namespace Salgu.Networking
 		[ClientOnly]
 		private void ReceiveReplicate(Packet msg)
 		{
-			var index = msg.PopInt32();
-			var guid = msg.PopString();
+			var index = msg.ReadInt32();
+			var guid = msg.ReadString();
 
 			var view = UnityEngine.Object.Instantiate(RMPNetworkService.ReplicateTable[index]);
 			view.ReceiveGuid(guid);
@@ -68,7 +68,7 @@ namespace Salgu.Networking
 		[ClientOnly]
 		private void ReceiveRemove(Packet msg)
 		{
-			var guid = msg.PopString();
+			var guid = msg.ReadString();
 
 			try
 			{
@@ -95,7 +95,7 @@ namespace Salgu.Networking
 
 		public void OnMessage(Packet msg)
 		{
-			var pt = (RMPEncoding.ProtocolId)msg.PopByte();
+			var pt = (RMPEncoding.ProtocolId)msg.ReadByte();
 			switch (pt)
 			{
 				case RMPEncoding.ProtocolId.RPC:
@@ -125,15 +125,15 @@ namespace Salgu.Networking
 				Debug.LogWarning("RPC Aborted : Parameters array can not be null.");
 				return;
 			}
-
+			
 			var msg = new Packet();
-			msg.Push((byte)RMPEncoding.ProtocolId.RPC);
-			msg.Push(sender.Guid);
-			msg.Push(methodName);
-			msg.Push(parameters.Length);
+			msg.Write((byte)RMPEncoding.ProtocolId.RPC);
+			msg.Write(sender.Guid);
+			msg.Write(methodName);
+			msg.Write(parameters.Length);
 
 			foreach (object param in parameters)
-				RMPEncoding.PushParameter(msg, param);
+				RMPEncoding.WriteParameter(msg, param);
 
 			NetworkService.Send(HostId, ConnectionId, msg);
 		}
@@ -142,9 +142,9 @@ namespace Salgu.Networking
 		public void SendReplicate(RMPNetworkView view)
 		{
 			var msg = new Packet();
-			msg.Push((byte)RMPEncoding.ProtocolId.Replicate);
-			msg.Push(view.ReplicationTableIndex);
-			msg.Push(view.Guid);
+			msg.Write((byte)RMPEncoding.ProtocolId.Replicate);
+			msg.Write(view.ReplicationTableIndex);
+			msg.Write(view.Guid);
 
 			// 서버는 클라에 함께 보낼 데이터를 넣는다.
 			view.SendReflectionMessage(null, "OnReplicate", msg);
@@ -156,8 +156,8 @@ namespace Salgu.Networking
 		public void SendRemove(RMPNetworkView view)
 		{
 			var msg = new Packet();
-			msg.Push((byte)RMPEncoding.ProtocolId.Remove);
-			msg.Push(view.Guid);
+			msg.Write((byte)RMPEncoding.ProtocolId.Remove);
+			msg.Write(view.Guid);
 			NetworkService.Send(HostId, ConnectionId, msg);
 		}
 	}

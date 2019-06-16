@@ -40,9 +40,9 @@ namespace Salgu.Networking.Demo
 		void OnReplicate(Packet msg)
 		{
 			if (NetworkService.IsServer)
-				msg.Push(transform);
+				msg.Write(transform);
 			else
-				msg.PopTransform(transform);
+				msg.ReadTransform(transform);
 
 			CUBES.Add(this);
 			_lastSyncTime = Time.time;

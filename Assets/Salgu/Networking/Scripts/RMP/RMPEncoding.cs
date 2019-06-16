@@ -83,110 +83,110 @@ namespace Salgu.Networking
 			}
 		}
 
-		public static void PushParameter(Packet msg, object parameter)
+		public static void WriteParameter(Packet msg, object parameter)
 		{
-			if (parameter == null) msg.Push((Byte)ParameterType.None);
+			if (parameter == null) msg.Write((Byte)ParameterType.None);
 			else if (parameter is Byte)
 			{
-				msg.Push((Byte)ParameterType.Byte);
-				msg.Push((Byte)parameter);
+				msg.Write((Byte)ParameterType.Byte);
+				msg.Write((Byte)parameter);
 			}
 			else if (parameter is SByte)
 			{
-				msg.Push((Byte)ParameterType.SByte);
-				msg.Push((SByte)parameter);
+				msg.Write((Byte)ParameterType.SByte);
+				msg.Write((SByte)parameter);
 			}
 			else if (parameter is Int16)
 			{
-				msg.Push((Byte)ParameterType.Int16);
-				msg.Push((Int16)parameter);
+				msg.Write((Byte)ParameterType.Int16);
+				msg.Write((Int16)parameter);
 			}
 			else if (parameter is UInt16)
 			{
-				msg.Push((Byte)ParameterType.UInt16);
-				msg.Push((UInt16)parameter);
+				msg.Write((Byte)ParameterType.UInt16);
+				msg.Write((UInt16)parameter);
 			}
 			else if (parameter is Int32)
 			{
-				msg.Push((Byte)ParameterType.Int32);
-				msg.Push((Int32)parameter);
+				msg.Write((Byte)ParameterType.Int32);
+				msg.Write((Int32)parameter);
 			}
 			else if (parameter is UInt32)
 			{
-				msg.Push((Byte)ParameterType.UInt32);
-				msg.Push((UInt32)parameter);
+				msg.Write((Byte)ParameterType.UInt32);
+				msg.Write((UInt32)parameter);
 			}
 			else if (parameter is Int64)
 			{
-				msg.Push((Byte)ParameterType.Int64);
-				msg.Push((Int64)parameter);
+				msg.Write((Byte)ParameterType.Int64);
+				msg.Write((Int64)parameter);
 			}
 			else if (parameter is UInt64)
 			{
-				msg.Push((Byte)ParameterType.UInt64);
-				msg.Push((UInt64)parameter);
+				msg.Write((Byte)ParameterType.UInt64);
+				msg.Write((UInt64)parameter);
 			}
 			else if (parameter is Single)
 			{
-				msg.Push((Byte)ParameterType.Single);
-				msg.Push((Single)parameter);
+				msg.Write((Byte)ParameterType.Single);
+				msg.Write((Single)parameter);
 			}
 			else if (parameter is Double)
 			{
-				msg.Push((Byte)ParameterType.Double);
-				msg.Push((Double)parameter);
+				msg.Write((Byte)ParameterType.Double);
+				msg.Write((Double)parameter);
 			}
 			else if (parameter is Char)
 			{
-				msg.Push((Byte)ParameterType.Char);
-				msg.Push((Char)parameter);
+				msg.Write((Byte)ParameterType.Char);
+				msg.Write((Char)parameter);
 			}
 			else if (parameter is Boolean)
 			{
-				msg.Push((Byte)ParameterType.Boolean);
-				msg.Push((Boolean)parameter);
+				msg.Write((Byte)ParameterType.Boolean);
+				msg.Write((Boolean)parameter);
 			}
 			else if (parameter is String)
 			{
-				msg.Push((Byte)ParameterType.String);
-				msg.Push((String)parameter);
+				msg.Write((Byte)ParameterType.String);
+				msg.Write((String)parameter);
 			}
 			else if (parameter is Byte[])
 			{
-				msg.Push((Byte)ParameterType.ByteArray);
+				msg.Write((Byte)ParameterType.ByteArray);
 				Byte[] param = (Byte[])parameter;
-				msg.Push(param);
+				msg.Write(param);
 			}
 			else if (parameter is Vector2)
 			{
-				msg.Push((Byte)ParameterType.Vector2);
-				msg.Push((Vector2)parameter);
+				msg.Write((Byte)ParameterType.Vector2);
+				msg.Write((Vector2)parameter);
 			}
 			else if (parameter is Vector3)
 			{
-				msg.Push((Byte)ParameterType.Vector3);
-				msg.Push((Vector3)parameter);
+				msg.Write((Byte)ParameterType.Vector3);
+				msg.Write((Vector3)parameter);
 			}
 			else if (parameter is Quaternion)
 			{
-				msg.Push((Byte)ParameterType.Quaternion);
-				msg.Push((Quaternion)parameter);
+				msg.Write((Byte)ParameterType.Quaternion);
+				msg.Write((Quaternion)parameter);
 			}
 			else if (parameter is Vector2Int)
 			{
-				msg.Push((Byte)ParameterType.Vector2Int);
-				msg.Push((Vector2Int)parameter);
+				msg.Write((Byte)ParameterType.Vector2Int);
+				msg.Write((Vector2Int)parameter);
 			}
 			else if (parameter is Vector3Int)
 			{
-				msg.Push((Byte)ParameterType.Vector3Int);
-				msg.Push((Vector3Int)parameter);
+				msg.Write((Byte)ParameterType.Vector3Int);
+				msg.Write((Vector3Int)parameter);
 			}
 		}
 
-		public static object PopParameter(Packet msg)
+		public static object ReadParameter(Packet msg)
 		{
-			ParameterType paramType = (ParameterType)msg.PopByte();
+			ParameterType paramType = (ParameterType)msg.ReadByte();
 			object parameter = null;
 			switch (paramType)
 			{
@@ -196,79 +196,79 @@ namespace Salgu.Networking
 					break;
 
 				case ParameterType.Byte:
-					parameter = msg.PopByte();
+					parameter = msg.ReadByte();
 					break;
 
 				case ParameterType.SByte:
-					parameter = msg.PopSByte();
+					parameter = msg.ReadSByte();
 					break;
 
 				case ParameterType.Int16:
-					parameter = msg.PopInt16();
+					parameter = msg.ReadInt16();
 					break;
 
 				case ParameterType.UInt16:
-					parameter = msg.PopUInt16();
+					parameter = msg.ReadUInt16();
 					break;
 
 				case ParameterType.Int32:
-					parameter = msg.PopInt32();
+					parameter = msg.ReadInt32();
 					break;
 
 				case ParameterType.UInt32:
-					parameter = msg.PopUInt32();
+					parameter = msg.ReadUInt32();
 					break;
 
 				case ParameterType.Int64:
-					parameter = msg.PopInt64();
+					parameter = msg.ReadInt64();
 					break;
 
 				case ParameterType.UInt64:
-					parameter = msg.PopUInt64();
+					parameter = msg.ReadUInt64();
 					break;
 
 				case ParameterType.Single:
-					parameter = msg.PopSingle();
+					parameter = msg.ReadSingle();
 					break;
 
 				case ParameterType.Double:
-					parameter = msg.PopDouble();
+					parameter = msg.ReadDouble();
 					break;
 
 				case ParameterType.Char:
-					parameter = msg.PopChar();
+					parameter = msg.ReadChar();
 					break;
 
 				case ParameterType.Boolean:
-					parameter = msg.PopBoolean();
+					parameter = msg.ReadBoolean();
 					break;
 
 				case ParameterType.String:
-					parameter = msg.PopString();
+					parameter = msg.ReadString();
 					break;
 
 				case ParameterType.ByteArray:
-					parameter = msg.PopByteArray();
+					parameter = msg.ReadByteArray();
 					break;
 
 				case ParameterType.Vector2:
-					parameter = msg.PopVector2();
+					parameter = msg.ReadVector2();
 					break;
 
 				case ParameterType.Vector3:
-					parameter = msg.PopVector3();
+					parameter = msg.ReadVector3();
 					break;
 
 				case ParameterType.Quaternion:
-					parameter = msg.PopQuaternion();
+					parameter = msg.ReadQuaternion();
 					break;
 
 				case ParameterType.Vector2Int:
-					parameter = msg.PopVector2Int();
+					parameter = msg.ReadVector2Int();
 					break;
 
 				case ParameterType.Vector3Int:
-					parameter = msg.PopVector3Int();
+					parameter = msg.ReadVector3Int();
 					break;
 			}
 
