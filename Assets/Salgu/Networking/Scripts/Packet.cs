@@ -10,12 +10,12 @@ namespace Salgu.Networking
 	public sealed partial class Packet
 	{
 		// 세그먼팅 되지 않는 적당한 크기임
-		public const int DEFAULT_SIZE = 1440;
+		public const int DEFAULT_LENGTH = 1440;
 
 		/// <summary>
 		/// To avoid memory allocation when Read() called.
 		/// </summary>
-		byte[] _readBuffer = new byte[DEFAULT_SIZE];
+		byte[] _readBuffer = new byte[DEFAULT_LENGTH];
 
 		/// <summary>
 		/// You are welcome to manage buffer directly if you want!
@@ -27,21 +27,38 @@ namespace Salgu.Networking
 		/// </summary>
 		public long Length { get { return Buffer.Length; } }
 
+		/// <summary>
+		/// Allocate buffer in default length
+		/// </summary>
 		public Packet()
 		{
-			Buffer = new MemoryStream(DEFAULT_SIZE);
+			Buffer = new MemoryStream(DEFAULT_LENGTH);
 		}
 
+		/// <summary>
+		/// Allocate buffer in a given capacity. If capacity is unvalid number, then default length.
+		/// </summary>
 		public Packet(int capacity)
 		{
-			Buffer = new MemoryStream(capacity);
+			if (capacity > 0)
+				Buffer = new MemoryStream(capacity);
+			else
+				Buffer = new MemoryStream();
 		}
 
-		public Packet(byte[] buffer)
+		/// <summary>
+		/// Allocate unresizable buffer with given byte array. You can specify the length of the buffer.
+		/// </summary>
+		public Packet(byte[] buffer, int length = -1)
 		{
 			Buffer = new MemoryStream(buffer);
+			if (length > 0) Buffer.SetLength(length);
+			else Buffer.SetLength(buffer.Length);
 		}
 
+		/// <summary>
+		/// Copy unresizable buffer with given packet.
+		/// </summary>
 		public Packet(Packet orig)
 		{
 			Buffer = new MemoryStream(orig.Buffer.ToArray());

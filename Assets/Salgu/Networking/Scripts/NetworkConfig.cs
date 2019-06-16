@@ -29,7 +29,7 @@ namespace Salgu.Networking
 			}
 		}
 
-		public const QosType DefaultChannel = QosType.ReliableSequenced;
+		public const QosType DefaultChannel = QosType.ReliableFragmentedSequenced;
 
 		private static ConnectionConfig LoadApplicationNetworkConfiguration()
 		{
@@ -39,8 +39,8 @@ namespace Salgu.Networking
 			// Notice that it is meaningless to add multiple instances of the same channel type, as the
 			// server will not be able to distinguish between them.
 			_channelDict = new Dictionary<QosType, int>();
-			_channelDict[QosType.ReliableSequenced] = config.AddChannel(QosType.ReliableSequenced);
-			_channelDict[QosType.Unreliable] = config.AddChannel(QosType.Unreliable);
+			_channelDict[QosType.ReliableFragmentedSequenced] = config.AddChannel(QosType.ReliableFragmentedSequenced);
+			_channelDict[QosType.UnreliableFragmented] = config.AddChannel(QosType.UnreliableFragmented);
 
 			return config;
 		}

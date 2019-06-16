@@ -12,7 +12,7 @@ namespace Salgu.Networking
 	{
 		private static NetworkService _instance = null;
 		private static INetworkEventHandler _handler = null;
-		private byte[] _buffer = new byte[Packet.DEFAULT_SIZE];
+		private byte[] _buffer = new byte[Packet.DEFAULT_LENGTH];
 
 		public static bool Initialized { get; private set; }
 		public static bool IsServer { get; private set; }
@@ -24,7 +24,6 @@ namespace Salgu.Networking
 			{
 				DontDestroyOnLoad(gameObject);
 				_instance = this;
-				Initialized = true;
 			}
 			else
 			{
@@ -41,6 +40,7 @@ namespace Salgu.Networking
 			// 오프라인 상태일 땐 자신이 서버라고 가정하면 일관성 있는 코드를 작성할 수 있다.
 			IsServer = true;
 			IsOnline = false;
+			Initialized = true;
 		}
 
 		void Update()

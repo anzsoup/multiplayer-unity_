@@ -65,7 +65,7 @@ namespace Salgu.Networking
 		public void OnDisconnectEvent(int hostId, int connectionId, int channelId)
 		{
 			// Stop() 이 먼저 호출됐다면 이미 Id 필드는 초기화되므로 파라미터를 이용하는게 안전
-			_serverPeer.OnRemoved();
+			if (_serverPeer != null) _serverPeer.OnRemoved();
 			// 호출할 필요 없음
 			// NetworkTransport.RemoveHost(hostId);
 			_serverPeer = null;

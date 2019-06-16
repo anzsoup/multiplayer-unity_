@@ -60,7 +60,6 @@ namespace Salgu.Networking
 			if (_instance == null)
 			{
 				_instance = this;
-				IsInitialized = true;
 			}
 			else
 			{
@@ -82,6 +81,7 @@ namespace Salgu.Networking
 			}
 
 			NetworkService.Init(gameObject);
+			IsInitialized = true;
 		}
 
 		void OnDestroy()
