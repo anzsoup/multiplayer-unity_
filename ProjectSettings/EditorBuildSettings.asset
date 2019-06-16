@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Salgu/Networking/Test/Scenes/Big_Packet.unity
-    guid: cfd48256c22f7ff4ca80ca12bb8d7a62
+    path: Assets/Salgu/Networking/Demo/Scenes/RMP_Demo.unity
+    guid: fe80c8e9dc3ca7545b6221870d5ab4b6
   m_configObjects: {}

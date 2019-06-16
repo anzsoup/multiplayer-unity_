@@ -53,7 +53,7 @@ namespace Salgu.Networking
 		{
 			if (_serverPeer != null)
 			{
-				var msg = new Packet(buffer);
+				var msg = new Packet(buffer, dataSize);
 				_serverPeer.OnMessage(msg);
 			}
 			else

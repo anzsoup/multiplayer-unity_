@@ -55,7 +55,7 @@ namespace Salgu.Networking
 			try
 			{
 				var peer = _peerDict[connectionId];
-				var msg = new Packet(buffer);
+				var msg = new Packet(buffer, dataSize);
 				peer.OnMessage(msg);
 			}
 			catch (Exception error)

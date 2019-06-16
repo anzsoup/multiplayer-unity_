@@ -47,21 +47,31 @@ namespace Salgu.Networking
 		}
 
 		/// <summary>
-		/// Allocate unresizable buffer with given byte array. You can specify the length of the buffer.
+		/// Allocate non-resizable buffer with given byte array. You can specify the length of the buffer.
 		/// </summary>
 		public Packet(byte[] buffer, int length = -1)
 		{
-			Buffer = new MemoryStream(buffer);
-			if (length > 0) Buffer.SetLength(length);
-			else Buffer.SetLength(buffer.Length);
+			byte[] copy;
+			if (length > 0)
+			{
+				copy = new byte[length];
+				Array.Copy(buffer, copy, length);
+			}
+			else
+			{
+				copy = new byte[buffer.Length];
+				Array.Copy(buffer, copy, buffer.Length);
+			}
+
+			Buffer = new MemoryStream(copy);
 		}
 
 		/// <summary>
-		/// Copy unresizable buffer with given packet.
+		/// Copy non-resizable buffer with given packet.
 		/// </summary>
-		public Packet(Packet orig)
+		public Packet(Packet orig) : this(orig.ToArray())
 		{
-			Buffer = new MemoryStream(orig.Buffer.ToArray());
+			
 		}
 
 		~Packet()
