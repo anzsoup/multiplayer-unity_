@@ -44,7 +44,7 @@ namespace Salgu.Steam
 		/// <summary>
 		/// Steam 클래스에 접근할 땐 이 값이 true 인지 반드시 확인해야 한다.
 		/// </summary>
-		public static bool IsInitialized { get; private set; }
+		public static bool IsReady { get; private set; }
 
 		/// <summary>
 		/// 게임의 스팀 App Id.
@@ -145,7 +145,7 @@ namespace Salgu.Steam
 			Config = new SteamConfig();
 
 			// RMP 네트워킹을 사용중일 경우 자동으로 스팀서버가 연동된다.
-			if (RMPNetworkService.IsInitialized)
+			if (FindObjectOfType<RMPNetworkService>() != null)
 			{
 				RMPNetworkService.OnStartServer.AddListener(_OnServerOpen);
 				RMPNetworkService.OnStopServer.AddListener(_OnServerClose);
@@ -157,7 +157,7 @@ namespace Salgu.Steam
 			if (!_isServerOnly)
 				StartSteamClient();
 
-			IsInitialized = true;
+			IsReady = true;
 		}
 
 		void Update()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ namespace Salgu.Networking
 		[SerializeField]
 		RMPNetworkView[] _replicateTable = null;
 
-		public static bool IsInitialized { get; private set; }
+		public static bool IsReady { get; private set; }
 		public static RMPNetworkView[] ReplicateTable { get { return _instance._replicateTable; } }
 
 		#region Events
@@ -69,7 +70,7 @@ namespace Salgu.Networking
 			}	
 		}
 
-		void Start()
+		IEnumerator Start()
 		{
 			// 인스펙터에 프리팹을 끌어다놓은 것들은 모두 하나의 프리팹을 참조하므로
 			// 이런식으로 프리팹의 데이터를 수정하는 것이 유효함.
@@ -81,7 +82,8 @@ namespace Salgu.Networking
 			}
 
 			NetworkService.Init(gameObject);
-			IsInitialized = true;
+			while (!NetworkService.IsReady) yield return null;
+			IsReady = true;
 		}
 
 		void OnDestroy()
@@ -89,7 +91,7 @@ namespace Salgu.Networking
 			if (_instance == this)
 			{
 				_instance = null;
-				IsInitialized = false;
+				IsReady = false;
 			}
 		}
 

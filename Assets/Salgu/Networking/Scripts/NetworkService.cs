@@ -14,7 +14,7 @@ namespace Salgu.Networking
 		private static INetworkEventHandler _handler = null;
 		private byte[] _buffer = new byte[Packet.DEFAULT_LENGTH];
 
-		public static bool Initialized { get; private set; }
+		public static bool IsReady { get; private set; }
 		public static bool IsServer { get; private set; }
 		public static bool IsOnline { get; private set; }
 
@@ -40,7 +40,7 @@ namespace Salgu.Networking
 			// 오프라인 상태일 땐 자신이 서버라고 가정하면 일관성 있는 코드를 작성할 수 있다.
 			IsServer = true;
 			IsOnline = false;
-			Initialized = true;
+			IsReady = true;
 		}
 
 		void Update()
@@ -131,7 +131,7 @@ namespace Salgu.Networking
 
 				NetworkTransport.Shutdown();
 				IsOnline = false;
-				Initialized = false;
+				IsReady = false;
 			}
 		}
 

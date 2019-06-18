@@ -11,7 +11,7 @@ namespace Salgu.Networking.Test
 
 		IEnumerator Start()
 		{
-			while (!RMPNetworkService.IsInitialized)
+			while (!RMPNetworkService.IsReady)
 				yield return null;
 
 			if (_isClient)
