@@ -17,6 +17,8 @@ namespace Salgu.Networking
 		RMPNetworkView[] _replicateTable = null;
 
 		public static bool IsReady { get; private set; }
+		public static bool IsServer { get { return NetworkService.IsServer; } }
+		public static bool IsOnline { get { return NetworkService.IsOnline; } }
 		public static RMPNetworkView[] ReplicateTable { get { return _instance._replicateTable; } }
 
 		#region Events
