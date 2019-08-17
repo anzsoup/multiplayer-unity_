@@ -47,6 +47,9 @@ namespace Salgu.Networking
 		/// </summary>
 		public RMPPeer MessageSender { get; private set; }
 
+		public bool IsServer { get { return RMPNetworkService.IsServer; } }
+		public bool IsOnline { get { return RMPNetworkService.IsOnline; } }
+
 		void Awake()
 		{
 			// 에디터에서 플레이모드가 아닐 때 실행되는 걸 방지
