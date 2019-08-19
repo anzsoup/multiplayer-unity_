@@ -461,6 +461,9 @@ namespace Salgu.Console
 		{
 			Shell.RunCommand(command);
 			History.Push(command);
+
+			if (IssuedError)
+				Print(TerminalLogType.Error, "Error: {0}", Shell.IssuedErrorMessage);
 		}
 
 		void CompleteCommand()
