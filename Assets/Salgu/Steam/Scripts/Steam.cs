@@ -108,7 +108,7 @@ namespace Salgu.Steam
 				return;
 			}
 
-			var go = new GameObject("Steam", typeof(Steam));
+			var go = new GameObject("Steam", typeof(RMPNetworkView), typeof(Steam));
 			var steam = go.GetComponent<Steam>();
 			var view = go.GetComponent<RMPNetworkView>();
 			steam._view = view;
