@@ -9,8 +9,8 @@ namespace Salgu.Build
 	public class BuildManager : MonoBehaviour
 	{
 		[Header("Build Info")]
-		[SerializeField] string _companyName = "Chicken Ingot";
-		[SerializeField] string _productName = "Multiplayer Starter Kit";
+		[SerializeField] string _companyName = "Salgu";
+		[SerializeField] string _productName = "Multiplayer Unity";
 		[SerializeField] string _binaryName = "bin";
 		[SerializeField] string _version = "1.0";
 
