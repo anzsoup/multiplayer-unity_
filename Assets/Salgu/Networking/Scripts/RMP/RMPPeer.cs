@@ -41,15 +41,8 @@ namespace Salgu.Networking
 			for (int i = 0; i < numOfParams; ++i)
 				parameters[i] = RMPEncoding.ReadParameter(msg);
 
-			try
-			{
-				var target = RMPNetworkView.Get(guid);
-				target.SendReflectionMessage(this, methodName, parameters);
-			}
-			catch (Exception error)
-			{
-				Debug.LogError(error);
-			}
+			var target = RMPNetworkView.Get(guid);
+			target?.SendReflectionMessage(this, methodName, parameters);
 		}
 
 		[ClientOnly]

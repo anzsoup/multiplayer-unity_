@@ -131,7 +131,7 @@ namespace Salgu.Networking
 					// Duplicated!!
 					instanceID = GetInstanceID();
 					_guid = System.Guid.NewGuid().ToString();
-
+					
 					// 프리팹 인스턴스는 변경된 상태가 저장이 안되는 문제가 있는데
 					// 프리팹 연결을 끊는 것 외에는 해결책이 없다.
 					UnityEditor.PrefabUtility.UnpackPrefabInstance(gameObject, UnityEditor.PrefabUnpackMode.Completely, UnityEditor.InteractionMode.AutomatedAction);
@@ -176,7 +176,9 @@ namespace Salgu.Networking
 
 		public static RMPNetworkView Get(string guid)
 		{
-			return _viewDict[guid];
+			RMPNetworkView view = null;
+			_viewDict.TryGetValue(guid, out view);
+			return view;
 		}
 
 		[ClientOnly]
