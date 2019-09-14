@@ -85,6 +85,8 @@ namespace Salgu.Build
 				if (GUILayout.Button("Build Project"))
 				{
 					build.BuildProject();
+					// To avoid error message after the build completed
+					GUIUtility.ExitGUI();
 				}
 			}
 		}
