@@ -218,7 +218,7 @@ namespace Salgu.Networking
 		/// </summary>
 		public void RPC(RMPPeer to, QosType channel, string methodName, params object[] parameters)
 		{
-			to.SendRPC(this, channel, methodName, parameters);
+			to?.SendRPC(this, channel, methodName, parameters);
 		}
 
 		/// <summary>
